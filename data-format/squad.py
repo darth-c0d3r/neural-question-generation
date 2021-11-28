@@ -2,6 +2,16 @@
 # drop questions which don't have answers
 # output tsv schema: context, question, answer
 
+# === USAGE === #
+
+# # preliminary stats on the squad dataset
+# python3 squad.py --input_dir ../data/squad/raw/ --task raw_stats
+
+# # prepare squad question answering data for consumption
+# python3 squad.py --input_dir ../data/squad/raw/ --output_dir ../data/squad/processed/ --task json2tsv
+
+# ============= #
+
 import argparse
 import sys
 import os

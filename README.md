@@ -154,7 +154,19 @@ TriviaQA is a realistic text-based question answering dataset which includes 950
 |	|	|	|	|	|-- train.lmdb*
 |	|	|	|	|	|-- eval.lmdb*
 |	|	|	|	|	|-- test.lmdb*
-
+|-- data-format
+|	|-- squad.py
+|-- data-utils
+|	|-- proto
+|	|	|-- data_item.proto
+|	|	|-- data_item_pb2.py*
+|	|-- data_stats.py
+|	|-- create_lmdb.py
+|-- src
+|	|-- util.py
+|	|-- dataset.py
+|-- stats
+|	|-- [stats related files]
 
 * : file created programmatically
 ```
@@ -171,5 +183,9 @@ python3 squad.py --input_dir ../data/squad/raw/ --output_dir ../data/squad/proce
 
 # fetch initial stats on the dataset
 python3 data_stats.py --input_path ../data/squad/processed/splits/ --output_path ../stats/squad/
+
+# convert the tsv data into lmdb database for efficient loading
+python3 -m grpc_tools.protoc -I./proto --python_out=./proto ./proto/data_item.proto
+python3 create_lmdb.py --input_path ../data/squad/processed/splits/ --output_path ../data/squad/processed/splits/lmdb/
 
 ```

@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+message DataItem {
+	string context = 1;
+	string answer = 2;
+	string question = 3;
+}
