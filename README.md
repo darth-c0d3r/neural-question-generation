@@ -165,6 +165,8 @@ TriviaQA is a realistic text-based question answering dataset which includes 950
 |-- src
 |	|-- util.py
 |	|-- dataset.py
+|-- vis
+|	|-- tsv_viewer.py
 |-- stats
 |	|-- [stats related files]
 
@@ -183,6 +185,9 @@ python3 squad.py --input_dir ../data/squad/raw/ --output_dir ../data/squad/proce
 
 # fetch initial stats on the dataset
 python3 data_stats.py --input_path ../data/squad/processed/splits/ --output_path ../stats/squad/
+
+# take a look at a few samples of the dataset
+streamlit run tsv_viewer.py -- --input_path ../data/squad/processed/splits/eval.tsv
 
 # convert the tsv data into lmdb database for efficient loading
 python3 -m grpc_tools.protoc -I./proto --python_out=./proto ./proto/data_item.proto

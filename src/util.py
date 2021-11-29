@@ -1,5 +1,7 @@
 # basic utility functions to be used everywhere
 
+import subprocess
+
 class Logger(object):
 
 	def __init__(self, filename):
@@ -22,3 +24,11 @@ def flatten_list(nested_list):
 	flatten a list of lists to a single list
 	"""
 	return [item for sublist in nested_list for item in sublist]
+
+def get_num_lines(filename):
+	"""
+	return the number of lines in filename
+	"""
+
+	output = subprocess.run(["wc", "-l", filename], capture_output=True).stdout.split()[0]
+	return int(output)
