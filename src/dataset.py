@@ -91,7 +91,7 @@ class QuestionGeneration_LMDB_Dataset(QuestionGeneration_TSV_Dataset):
 
 		return {'context': context, 'answer': answer, 'question': question}
 
-def get_QuestionGeneration_dataloaders(base_path, batch_size, use_tsv=False):
+def get_QuestionGeneration_dataloaders(base_path, batch_size, use_tsv=False, num_workers=2):
 	"""
 	build and return dataloaders for QuestionGeneration datasets
 	# base_path is the directory containing tsv / lmdb files
@@ -128,7 +128,8 @@ def get_QuestionGeneration_dataloaders(base_path, batch_size, use_tsv=False):
 	else:
 		data = { Path(filename).stem : QuestionGeneration_LMDB_Dataset(filename) for filename in data_files }
 
-	dataloaders = {name: DataLoader(data[name], batch_size=batch_size, shuffle=(name=="train")) for name in data}
+	dataloaders = {name: DataLoader(data[name], batch_size=batch_size, shuffle=(name=="train"),
+					num_workers=num_workers, pin_memory=True) for name in data}
 
 	return dataloaders
 

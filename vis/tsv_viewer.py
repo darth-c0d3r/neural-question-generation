@@ -52,7 +52,8 @@ def main(input_filename):
 	display_type = st.selectbox('Display Type:', ['shuffled', 'indexed'])
 
 	if display_type == 'indexed':
-		idx_chunk = int(st.text_input(f"Chunk Index. [0, {num_chunks-1}]"))
+		inp = st.text_input(f"Chunk Index. [0, {num_chunks-1}]")
+		idx_chunk = int(inp) if len(inp.strip()) != 0 else 0
 	else:
 		idx_chunk = random.randint(0, num_chunks-1)
 
