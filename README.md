@@ -1,18 +1,18 @@
 # Introduction
 
-[HuggingFace](https://huggingface.co/) is one of the most important libraries for a NLP researcher / developer as it provides numerous pre-trained models, datasets, and tons of utility functions for NLP. In this repository, I'm trying to setup a complete pipeline for a Machine Learning project and the task I've chosen for the setup is Question Generation for Paragraphs. This is a seq2seq task for which I intend to fine-tune pre-trained encoder-decoder Transformer models for Extractive Summarization like BART / Pegasus.
+[HuggingFace](https://huggingface.co/) is one of the most useful libraries for a NLP researcher / developer as it provides numerous pre-trained models, datasets, and tons of utility functions for NLP. In this repository, I'm trying to setup a complete pipeline for a Machine Learning project and the task I've chosen for the setup is Question Generation for Paragraphs. This is a seq2seq task for which I intend to fine-tune pre-trained encoder-decoder Transformer models for Extractive Summarization like BART / Pegasus.
 
 # Features / Goals
 
 * Environment setup using YAML file
 * Hyper-parameter management with configs
-* Efficient data loading using LMDB
+* Efficient data loading using LMDB [done]
 * Dataset Visualization / Stats
 * Results Visualization / Stats
 * Multiple Decoding Algorithm Options
 * Intermediate Checkpoints
 * Parallel Logging to file
-* Timing Benchmarking
+* Latency + Efficiency Benchmarking
 * Distributed Training and Inference
 * Model Distillation
 * Model Quantization
@@ -22,7 +22,7 @@
 
 # Dataset
 
-The goal of Question Generation is to generate a valid and fluent question according to a given passage and the target answer. Hence, the input to the model will be a passage context and an answer, and the output / target will be the question for the given answer. Question Generation can be used in many scenarios, such as automatic tutoring systems, improving the performance of Question Answering models and enabling chat-bots to lead a conversation. The final dataset is created by taking the union of the following Question Answering Datasets. The dataset must have the following three columns: context, question, answer
+The goal of Question Generation is to generate a valid and fluent question according to a given passage and the target answer. Hence, the input to the model will be a passage context and an answer, and the output / target will be the question for the given answer. Question Generation can be used in many scenarios, such as automatic tutoring systems, improving the performance of Question Answering models and enabling chat-bots to lead a conversation. The final dataset is created by taking the union of the following Question Answering Datasets. The dataset must have the following three columns: context, question, answer.
 
 ## [SQuAD](https://rajpurkar.github.io/SQuAD-explorer/)
 
@@ -194,4 +194,15 @@ streamlit run tsv_viewer.py -- --input_path ../data/squad/processed/splits/eval.
 python3 -m grpc_tools.protoc -I./proto --python_out=./proto ./proto/data_item.proto
 python3 create_lmdb.py --input_path ../data/squad/processed/splits/ --output_path ../data/squad/processed/splits/lmdb/
 
+# training routing
+python3 train.py --config_filename ../config/train.config
+
+# evaluation routing
+python3 evaluate.py --config_filename ../config/eval.config
+
 ```
+
+# ToDo / Points to Ponder
+
+* Have a Start token for decoder input?
+* copydir instead of save_pretrained

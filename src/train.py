@@ -7,17 +7,19 @@ import sys
 from pathlib import Path
 from tqdm import tqdm
 
+import numpy as np
 import torch
+import torch.optim as optim
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 from util import read_json, parse_unknown_args, insert_unknown_args, get_unique_path
-from util import get_device, pretty_print_results, save_model
+from util import get_device, pretty_print_results, save_model, Logger
 
 from dataset import get_QuestionGeneration_dataloaders
 from evaluate import evaluate
 from plotting import Plotter
 
-def train(model, dataloaders, optimizer, scheduler, device, config):
+def train(tokenizer, model, dataloaders, optimizer, scheduler, device, config):
 	"""
 	the main training routine
 	train the model
@@ -33,7 +35,7 @@ def train(model, dataloaders, optimizer, scheduler, device, config):
 	
 	# get the eval frequency
 	num_batches = int(np.ceil(len(dataloaders["train"].dataset)/config["dataset_batch_size"]))
-	eval_every_batch = num_batches // config["num_evals_per_epoch"]
+	eval_every_batch = (num_batches + 1) // config["num_evals_per_epoch"]
 
 	# initiate cumulative loss
 	total_loss = 0.
@@ -119,14 +121,15 @@ def main(config):
 	model = AutoModelForSeq2SeqLM.from_pretrained(config["model_name"]).to(device)
 
 	# get the dataloaders
-	dataloaders = get_QuestionGeneration_dataloaders(config["dataset_dir"], tokenizer, config["dataset_batch_size"])
+	dataloaders = get_QuestionGeneration_dataloaders(config["dataset_dir"], tokenizer, 
+					config["dataset_batch_size"], config["max_src_len"], config["max_tgt_len"])
 
 	# declare the optimizers and LR schedulers
 	optimizer = optim.Adam(list(model.parameters()), lr=config["learning_rate"], betas=(0.5, 0.999))
 	scheduler = None
 
 	# call the train routine
-	train(model, dataloaders, optimizer, scheduler, device, config)
+	train(tokenizer, model, dataloaders, optimizer, scheduler, device, config)
 
 
 if __name__ == '__main__':

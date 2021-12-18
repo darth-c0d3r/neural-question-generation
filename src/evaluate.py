@@ -69,7 +69,8 @@ def main(config):
 	model = AutoModelForSeq2SeqLM.from_pretrained(config["model_name"]).to(device)
 
 	# get the dataloaders
-	dataloader = get_QuestionGeneration_dataloaders(config["dataset_file"], tokenizer, config["dataset_batch_size"])
+	dataloader = get_QuestionGeneration_dataloaders(config["dataset_file"], tokenizer, 
+				config["dataset_batch_size"], config["max_src_len"], config["max_tgt_len"])
 
 	# call the eval routine
 	evaluate(tokenizer, model, dataloader, device, None, None, None, None)

@@ -21,7 +21,7 @@ class QuestionGeneration_TSV_Dataset(Dataset):
 	class to encode and return text and labels from tsv dataset
 	"""
 
-	def __init__(self, tsv_filename, tokenizer, data_size=None):
+	def __init__(self, tsv_filename, tokenizer, max_src_len, max_tgt_len, data_size=None):
 		"""
 		tsv_filename is the path to the tsv file
 		use data_size if you need to limit the dataset size
@@ -32,6 +32,8 @@ class QuestionGeneration_TSV_Dataset(Dataset):
 
 		self.tsv_filename = tsv_filename
 		self.tokenizer = tokenizer
+		self.max_src_len = max_src_len
+		self.max_tgt_len = max_tgt_len
 
 		self.data = pd.read_csv(self.tsv_filename, sep="\t", header=0, quoting=csv.QUOTE_NONE)
 		self.length = len(self.data)
@@ -57,8 +59,8 @@ class QuestionGeneration_TSV_Dataset(Dataset):
 		source = [f"{d['answer']} <s> {d['context']}" for d in data]
 		target = [d["question"] for d in data]
 
-		source = self.tokenizer(source, padding='longest', truncation=True, return_tensors='pt')
-		target = self.tokenizer(target, padding='longest', truncation=True, return_tensors='pt')
+		source = self.tokenizer(source, max_length=self.max_src_len, padding='longest', truncation=True, return_tensors='pt')
+		target = self.tokenizer(target, max_length=self.max_tgt_len, padding='longest', truncation=True, return_tensors='pt')
 
 		source_ids = source['input_ids']
 		source_mask = source['attention_mask']
@@ -75,7 +77,7 @@ class QuestionGeneration_LMDB_Dataset(QuestionGeneration_TSV_Dataset):
 	class to encode and return text and labels from lmdb dataset
 	"""
 
-	def __init__(self, lmdb_filename, tokenizer, data_size=None):
+	def __init__(self, lmdb_filename, tokenizer, max_src_len, max_tgt_len, data_size=None):
 		"""
 		lmdb_filename is the path to the lmdb database
 		use data_size if you need to limit the dataset size
@@ -86,6 +88,8 @@ class QuestionGeneration_LMDB_Dataset(QuestionGeneration_TSV_Dataset):
 
 		self.lmdb_filename = lmdb_filename
 		self.tokenizer = tokenizer
+		self.max_src_len = max_src_len
+		self.max_tgt_len = max_tgt_len
 
 		env = lmdb.open(self.lmdb_filename, max_readers=1, readonly=True, lock=False, readahead=False, meminit=False)
 		with env.begin(write=False) as txn:
@@ -111,7 +115,8 @@ class QuestionGeneration_LMDB_Dataset(QuestionGeneration_TSV_Dataset):
 
 		return {'context': context, 'answer': answer, 'question': question}
 
-def get_QuestionGeneration_dataloaders(base_path, tokenizer, batch_size, use_tsv=False, num_workers=2):
+def get_QuestionGeneration_dataloaders(base_path, tokenizer, batch_size, 
+				max_src_len=512, max_tgt_len=128, use_tsv=False, num_workers=2):
 	"""
 	build and return dataloaders for QuestionGeneration datasets
 	# base_path is the directory containing tsv / lmdb files
@@ -143,8 +148,8 @@ def get_QuestionGeneration_dataloaders(base_path, tokenizer, batch_size, use_tsv
 			data_files = [os.path.join(base_path, filename) for filename in os.listdir(base_path) if filename.endswith(".tsv")]
 			use_tsv = True
 
-	if use_tsv is True: data = { Path(filename).stem : QuestionGeneration_TSV_Dataset(filename, tokenizer) for filename in data_files }
-	else: data = { Path(filename).stem : QuestionGeneration_LMDB_Dataset(filename, tokenizer) for filename in data_files }
+	if use_tsv is True: data = { Path(filename).stem : QuestionGeneration_TSV_Dataset(filename, tokenizer, max_src_len, max_tgt_len) for filename in data_files }
+	else: data = { Path(filename).stem : QuestionGeneration_LMDB_Dataset(filename, tokenizer, max_src_len, max_tgt_len) for filename in data_files }
 
 	dataloaders = {name: DataLoader(data[name], batch_size=batch_size, shuffle=(name=="train"),
 					num_workers=num_workers, pin_memory=True, collate_fn=data[name].collate_fn) for name in data}
