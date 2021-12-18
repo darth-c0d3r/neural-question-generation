@@ -21,7 +21,7 @@ class QuestionGeneration_TSV_Dataset(Dataset):
 	class to encode and return text and labels from tsv dataset
 	"""
 
-	def __init__(self, tsv_filename, data_size=None):
+	def __init__(self, tsv_filename, tokenizer, data_size=None):
 		"""
 		tsv_filename is the path to the tsv file
 		use data_size if you need to limit the dataset size
@@ -31,6 +31,7 @@ class QuestionGeneration_TSV_Dataset(Dataset):
 		super().__init__()
 
 		self.tsv_filename = tsv_filename
+		self.tokenizer = tokenizer
 
 		self.data = pd.read_csv(self.tsv_filename, sep="\t", header=0, quoting=csv.QUOTE_NONE)
 		self.length = len(self.data)
@@ -51,12 +52,30 @@ class QuestionGeneration_TSV_Dataset(Dataset):
 
 		return {'context': context, 'answer': answer, 'question': question}
 
+	def collate_fn(self, data):
+
+		source = [f"{d['answer']} <s> {d['context']}" for d in data]
+		target = [d["question"] for d in data]
+
+		source = self.tokenizer(source, padding='longest', truncation=True, return_tensors='pt')
+		target = self.tokenizer(target, padding='longest', truncation=True, return_tensors='pt')
+
+		source_ids = source['input_ids']
+		source_mask = source['attention_mask']
+		target_ids = target['input_ids']
+		
+		return {
+			'source_ids': source_ids.to(dtype=torch.long),
+			'source_mask': source_mask.to(dtype=torch.long),
+			'target_ids': target_ids.to(dtype=torch.long),
+		}
+
 class QuestionGeneration_LMDB_Dataset(QuestionGeneration_TSV_Dataset):
 	"""
 	class to encode and return text and labels from lmdb dataset
 	"""
 
-	def __init__(self, lmdb_filename, data_size=None):
+	def __init__(self, lmdb_filename, tokenizer, data_size=None):
 		"""
 		lmdb_filename is the path to the lmdb database
 		use data_size if you need to limit the dataset size
@@ -66,6 +85,7 @@ class QuestionGeneration_LMDB_Dataset(QuestionGeneration_TSV_Dataset):
 		# super().__init__()
 
 		self.lmdb_filename = lmdb_filename
+		self.tokenizer = tokenizer
 
 		env = lmdb.open(self.lmdb_filename, max_readers=1, readonly=True, lock=False, readahead=False, meminit=False)
 		with env.begin(write=False) as txn:
@@ -91,7 +111,7 @@ class QuestionGeneration_LMDB_Dataset(QuestionGeneration_TSV_Dataset):
 
 		return {'context': context, 'answer': answer, 'question': question}
 
-def get_QuestionGeneration_dataloaders(base_path, batch_size, use_tsv=False, num_workers=2):
+def get_QuestionGeneration_dataloaders(base_path, tokenizer, batch_size, use_tsv=False, num_workers=2):
 	"""
 	build and return dataloaders for QuestionGeneration datasets
 	# base_path is the directory containing tsv / lmdb files
@@ -123,30 +143,52 @@ def get_QuestionGeneration_dataloaders(base_path, batch_size, use_tsv=False, num
 			data_files = [os.path.join(base_path, filename) for filename in os.listdir(base_path) if filename.endswith(".tsv")]
 			use_tsv = True
 
-	if use_tsv is True:
-		data = { Path(filename).stem : QuestionGeneration_TSV_Dataset(filename) for filename in data_files }
-	else:
-		data = { Path(filename).stem : QuestionGeneration_LMDB_Dataset(filename) for filename in data_files }
+	if use_tsv is True: data = { Path(filename).stem : QuestionGeneration_TSV_Dataset(filename, tokenizer) for filename in data_files }
+	else: data = { Path(filename).stem : QuestionGeneration_LMDB_Dataset(filename, tokenizer) for filename in data_files }
 
 	dataloaders = {name: DataLoader(data[name], batch_size=batch_size, shuffle=(name=="train"),
-					num_workers=num_workers, pin_memory=True) for name in data}
+					num_workers=num_workers, pin_memory=True, collate_fn=data[name].collate_fn) for name in data}
 
+
+	if len(dataloaders) == 1: return list(dataloaders.values())[0]
 	return dataloaders
 
 def run_tests():
 
+	from transformers import AutoTokenizer
+	model_name = "google/pegasus-xsum"
+	tokenizer = AutoTokenizer.from_pretrained(model_name)
+
 	base_path = "../data/squad/processed/splits/"
-	dataloaders_tsv = get_QuestionGeneration_dataloaders(base_path, 4, use_tsv=True)
-	dataloaders_lmdb = get_QuestionGeneration_dataloaders(base_path, 4, use_tsv=False)
+	dataloaders_tsv = get_QuestionGeneration_dataloaders(base_path, tokenizer, 4, use_tsv=True)
+	dataloaders_lmdb = get_QuestionGeneration_dataloaders(base_path, tokenizer, 4, use_tsv=False)
 
 	for data in dataloaders_tsv['test']:
-		print(data)
+		
+		source_ids = data['source_ids']
+		source_mask = data['source_mask']
+		target_ids = data['target_ids'][:,:-1].contiguous()
+		labels = data['target_ids'][:,1:].clone().detach()
+		labels[data['target_ids'][:,1:] == tokenizer.pad_token_id] = -100
+
+		print(source_ids.shape, source_mask.shape, target_ids.shape, labels.shape)
+		print(target_ids)
+		print(labels)
+
 		break
 
 	print()
 
 	for data in dataloaders_lmdb['test']:
-		print(data)
+		
+		source_ids = data['source_ids']
+		source_mask = data['source_mask']
+		target_ids = data['target_ids'][:,:-1].contiguous()
+		labels = data['target_ids'][:,1:].clone().detach()
+		labels[data['target_ids'][:,1:] == tokenizer.pad_token_id] = -100
+
+		print(source_ids.shape, source_mask.shape, target_ids.shape, labels.shape)
+
 		break
 
 # run_tests()
