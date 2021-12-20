@@ -5,13 +5,14 @@
 # Features / Goals
 
 * Environment setup using YAML file
-* Hyper-parameter management with configs
+* Hyper-parameter management with configs [done]
 * Efficient data loading using LMDB [done]
-* Dataset Visualization / Stats
-* Results Visualization / Stats
+* Dataset Visualization / Stats [done]
+* Results Visualization / Stats [done]
+* Separate eval-every and print-every params
 * Multiple Decoding Algorithm Options
-* Intermediate Checkpoints
-* Parallel Logging to file
+* Intermediate Checkpoints [done]
+* Parallel Logging to file [done]
 * Latency + Efficiency Benchmarking
 * Distributed Training and Inference
 * Model Distillation

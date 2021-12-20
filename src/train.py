@@ -105,7 +105,7 @@ def train(tokenizer, model, dataloaders, optimizer, scheduler, device, config):
 		_ = evaluate(tokenizer, model, dataloaders["eval"], device, epoch, config["num_epochs"], "EPOCH", "END")
 
 		# save intermediate checkpoints
-		save_model(model, config["ckpts_folder"], f"epoch_{epoch}")
+		save_model(model, config["ckpts_folder"], f"epoch")
 		print()
 
 def main(config):

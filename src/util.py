@@ -139,3 +139,28 @@ def pretty_print_results(tag, epoch, num_epochs, batch, num_batches,
 	all_components = "\t".join([c for c in all_components if c is not None])
 
 	print(all_components)
+
+def merge_input_output_files(src_filename_1, src_filename_2, output_filename):
+	"""
+	merge input and temp files
+	temp file can be tsv or lmdb
+	implement lmdb later maybe
+	"""
+
+	src_1 = open(src_filename_1, "r")
+	src_2 = open(src_filename_2, "r")
+	tgt = open(output_filename, "w+")
+
+	while True:
+		l1 = src_1.readline()
+		l2 = src_2.readline()
+
+		if len(l1) == 0 or len(l2) == 0:
+			break
+
+		o = l1.rstrip("\n") + "\t" + l2.rstrip("\n") + "\n"
+		tgt.write(o)
+
+	src_1.close()
+	src_2.close()
+	tgt.close()
