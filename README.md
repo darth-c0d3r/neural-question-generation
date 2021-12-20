@@ -9,7 +9,7 @@
 * Efficient data loading using LMDB [done]
 * Dataset Visualization / Stats [done]
 * Results Visualization / Stats [done]
-* Separate eval-every and print-every params
+* LR Scheduler
 * Multiple Decoding Algorithm Options
 * Intermediate Checkpoints [done]
 * Parallel Logging to file [done]
@@ -185,6 +185,8 @@ python3 squad.py --input_dir ../data/squad/raw/ --task raw_stats
 # prepare squad question answering data for consumption
 python3 squad.py --input_dir ../data/squad/raw/ --output_dir ../data/squad/processed/ --task json2tsv
 
+# at this point manually split the train set into train and eval in ./splits
+
 # fetch initial stats on the dataset
 python3 data_stats.py --input_path ../data/squad/processed/splits/ --output_path ../stats/squad/
 
@@ -206,4 +208,3 @@ python3 evaluate.py --config_filename ../config/eval.config
 # ToDo / Points to Ponder
 
 * Have a Start token for decoder input?
-* copydir instead of save_pretrained
