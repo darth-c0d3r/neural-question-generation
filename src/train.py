@@ -129,6 +129,7 @@ def main(config):
 
 	num_batches = int(np.ceil(len(dataloaders["train"].dataset)/config["dataset_batch_size"]))
 	scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=num_batches, gamma=0.5)
+	# scheduler = None
 
 	# call the train routine
 	train(tokenizer, model, dataloaders, optimizer, scheduler, device, config)
