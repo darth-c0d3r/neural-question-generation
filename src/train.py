@@ -89,7 +89,7 @@ def train(tokenizer, model, dataloaders, optimizer, scheduler, device, config):
 				save_model(model, config["ckpts_folder"], "latest")
 
 				# extend plots
-				loss_plotter.extend_plot({"train": [loss.detach()], "eval": [eval_loss]})
+				loss_plotter.extend_plot({"train": [loss.detach().cpu()], "eval": [eval_loss.cpu()]})
 				
 				# save best model separately
 				if eval_loss < best_eval_loss:
@@ -125,8 +125,10 @@ def main(config):
 					config["dataset_batch_size"], config["max_src_len"], config["max_tgt_len"])
 
 	# declare the optimizers and LR schedulers
-	optimizer = optim.Adam(list(model.parameters()), lr=config["learning_rate"], betas=(0.5, 0.999))
-	scheduler = None
+	optimizer = optim.Adam(list(model.parameters()), lr=config["learning_rate"], betas=(0.9, 0.999))
+
+	num_batches = int(np.ceil(len(dataloaders["train"].dataset)/config["dataset_batch_size"]))
+	scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=num_batches, gamma=0.5)
 
 	# call the train routine
 	train(tokenizer, model, dataloaders, optimizer, scheduler, device, config)
