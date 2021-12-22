@@ -9,8 +9,8 @@
 * Efficient data loading using LMDB [done]
 * Dataset Visualization / Stats [done]
 * Results Visualization / Stats [done]
-* LR Scheduler
-* Multiple Decoding Algorithm Options
+* LR Scheduler [done]
+* Multiple Decoding Algorithm Options [done]
 * Intermediate Checkpoints [done]
 * Parallel Logging to file [done]
 * Latency + Efficiency Benchmarking
@@ -202,6 +202,15 @@ python3 train.py --config_filename ../config/train.config
 
 # evaluation routing
 python3 evaluate.py --config_filename ../config/eval.config
+
+# get predictions
+python3 predict.py --config_filename ../config/pred.config
+
+# to get interactive predictions
+python3 generate.py --config_filename ../config/pred.config
+
+# view the results using streamlit
+streamlit run tsv_viewer.py -- --input_path ../logs/pred/run_6/eval.tsv
 
 ```
 

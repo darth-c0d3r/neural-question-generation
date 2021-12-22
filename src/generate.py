@@ -13,40 +13,32 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 from util import read_json, parse_unknown_args, insert_unknown_args, get_unique_path
 from util import get_device, pretty_print_results, merge_input_output_files, Logger
-from dataset import get_QuestionGeneration_dataloaders
 
-def predict(tokenizer, model, dataloader, device, config):
+def predict(tokenizer, model, device, config):
 	"""
 	get predictions from the model and output them to output_filename
 	"""
-
-	temp_filename = os.path.join(config["logs_folder"], "temp.tsv")
-	open(temp_filename, 'w+').close()
-	header = True
 
 	# set the eval flag
 	model.eval()
 
 	with torch.no_grad():
 
-		# iterate over all the batches
-		for data_batch in tqdm(dataloader):
+		while True:
 
-			source_ids = data_batch['source_ids'].to(device)
-			source_mask = data_batch['source_mask'].to(device)
-			batch = {'input_ids': source_ids, 'attention_mask': source_mask}
+			print(f"\n{'='*20}\n")
+
+			source = input("Input Passage: ")
+			source = tokenizer([source], max_length=config["max_src_len"], padding='longest', truncation=True, return_tensors='pt')
+
+			batch = {'input_ids': source['input_ids'].to(device), 
+						'attention_mask': source['attention_mask'].to(device)}
 			
 			# get the model output
 			model_out = model.generate(**batch, **config["decoding_params"]) # add output hyperparams here
 			model_out = tokenizer.batch_decode(model_out, skip_special_tokens=True)
 
-			# put the outputs in a dataframe and write to file
-			df = pd.DataFrame(model_out, columns=["Prediction"]).fillna("[EMPTY]")
-			df.to_csv(temp_filename, sep="\t", header=header, index=False, mode="a")
-			header = False
-
-	merge_input_output_files(config["dataset_file"], temp_filename, config["output_filename"])
-	print(f"Written predictions to {config['output_filename']}")
+			print(f"\nOutput: {model_out}")
 
 def main(config):
 	"""
@@ -60,12 +52,8 @@ def main(config):
 	tokenizer = AutoTokenizer.from_pretrained(config["tokenizer_name"])
 	model = AutoModelForSeq2SeqLM.from_pretrained(config["model_name"]).to(device)
 
-	# get the dataloaders
-	dataloader = get_QuestionGeneration_dataloaders(config["dataset_file"], tokenizer, 
-				config["dataset_batch_size"], config["max_src_len"], config["max_tgt_len"])
-
 	# call the pred routine
-	predict(tokenizer, model, dataloader, device, config)
+	predict(tokenizer, model, device, config)
 
 if __name__ == '__main__':
 
@@ -83,20 +71,6 @@ if __name__ == '__main__':
 	# add unknown args to config and override if needed
 	unknown = parse_unknown_args(unknown)
 	config = insert_unknown_args(config, unknown)
-
-	# get unique path for base folder and create it
-	config["logs_folder"] = get_unique_path(config["base_folder"], "pred", prefix="run")
-	Path(config["logs_folder"]).mkdir(parents=False, exist_ok=False)
-
-	# get the output filename
-	config["output_filename"] = os.path.join(config["logs_folder"], f"{Path(config['dataset_file']).stem}.tsv")
-	
-	# save the current config file in the logs folder
-	with open(os.path.join(config["logs_folder"], Path(args.config_filename).name), "w+") as f:
-		json5.dump(config, f, indent=4)
-
-	# set up parallel logging
-	sys.stdout = Logger(os.path.join(config["logs_folder"], "logfile.log"))
 
 	# pretty print the config file
 	print(json5.dumps(config, indent=4))
