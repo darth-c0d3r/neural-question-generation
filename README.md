@@ -38,7 +38,7 @@ The first step is to remove questions which don't have answers. After that, we s
 
 **Original Dataset**
 
-| Train Set |
+| Train Set | |
 | --- | --- |
 | num documents | 442 |
 | num contexts | 19035 |
