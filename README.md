@@ -46,104 +46,34 @@ The first step is to remove questions which don't have answers. After that, we s
 | num questions without answers | 43498 |
 | num unique answers | 86821 |
 
+| Dev Set | |
+| --- | --- |
+| num documents | 35 |
+| num contexts | 1204 |
+| num questions with answers | 5928 |
+| num questions without answers | 5945 |
+| num unique answers | 10279 |
 
-<!-- <u>Train Set</u>
-num documents: 442
-num contexts: 19035
-num questions with answers: 86821
-num questions without answers: 43498
-num unique answers: 86821
+| Split | Num Docs | Num Contexts | Ques w/ Ans | Ques w/o Ans | Num Unique Ans |
+| ----- | -------- | ------------ | ----------- | ------------ | -------------- |
+| Train | 442      | 19035        | 86821       | 43498        | 86821          |
+| Dev   | 35       | 1204         | 5928        | 5945         | 10279          |
 
-<u>Dev Set</u>
-num documents: 35
-num contexts: 1204
-num questions with answers: 5928
-num questions without answers: 5945
-num unique answers: 10279
+**After Preprocessing**
 
-<b>After Preprocessing</b>
- -->
-analyzing ../data/squad/processed/splits/eval.tsv ...
-6it [00:00, 33.32it/s]
-stats for col context
-num rows: 5826
-avg. words: 123.12
-max. words: 445
-min. words: 67
-plot saved to ../stats/squad/
+| Split | Num Rows |   Context  | Answer | Question |
+| ----- | -------- | ---------- | ------ | -------- |
+| Train | 80995    | 653,120,20 | 43,3,1 | 40,10,1  | 
+| Eval  | 5826     | 445,123,67 | 28,3,1 | 29,10,3  |
+| Test  | 10297    | 629,129,25 | 29,4,1 | 31,10,3  |
 
-stats for col answer
-num rows: 5826
-avg. words: 2.97
-max. words: 28
-min. words: 1
-plot saved to ../stats/squad/
+\*: The numbers in the columns indicate max, avg, min number of words.
 
-stats for col question
-num rows: 5826
-avg. words: 10.04
-max. words: 29
-min. words: 3
-plot saved to ../stats/squad/
-
-==========
-
-analyzing ../data/squad/processed/splits/test.tsv ...
-11it [00:00, 37.60it/s]
-stats for col context
-num rows: 10279
-avg. words: 129.28
-max. words: 629
-min. words: 25
-plot saved to ../stats/squad/
-
-stats for col answer
-num rows: 10279
-avg. words: 3.62
-max. words: 29
-min. words: 1
-plot saved to ../stats/squad/
-
-stats for col question
-num rows: 10279
-avg. words: 10.33
-max. words: 31
-min. words: 3
-plot saved to ../stats/squad/
-
-==========
-
-analyzing ../data/squad/processed/splits/train.tsv ...
-80it [00:02, 30.73it/s]
-stats for col context
-num rows: 80995
-avg. words: 119.55
-max. words: 653
-min. words: 20
-plot saved to ../stats/squad/
-
-stats for col answer
-num rows: 80995
-avg. words: 3.18
-max. words: 43
-min. words: 1
-plot saved to ../stats/squad/
-
-stats for col question
-num rows: 80995
-avg. words: 10.07
-max. words: 40
-min. words: 1
-plot saved to ../stats/squad/
-
-==========
-
-
-## [Natural Questions](https://ai.google.com/research/NaturalQuestions) [Currently not in use.]
+## [Natural Questions](https://ai.google.com/research/NaturalQuestions) [Not Used]
 
 The Natural Questions corpus is a question answering dataset by Google. Each example is comprised of a google.com query and a corresponding Wikipedia page. Each Wikipedia page has a passage (or long answer) annotated on the page that answers the question and one or more short spans from the annotated passage containing the actual answer. The long and the short answer annotations can however be empty. If they are both empty, then there is no answer on the page at all. If the long answer annotation is non-empty, but the short answer annotation is empty, then the annotated passage answers the question but no explicit short answer could be found. Finally 1% of the documents have a passage annotated with a short answer that is “yes” or “no”, instead of a list of short spans.
 
-## [TriviaQA](http://nlp.cs.washington.edu/triviaqa/) [Currently not in use.]
+## [TriviaQA](http://nlp.cs.washington.edu/triviaqa/) [Not Used]
 
 TriviaQA is a realistic text-based question answering dataset which includes 950K question-answer pairs from 662K documents collected from Wikipedia and the web. This dataset is more challenging than standard QA benchmark datasets such as Stanford Question Answering Dataset (SQuAD), as the answers for a question may not be directly obtained by span prediction and the context is very long. TriviaQA dataset consists of both human-verified and machine-generated QA subsets.
 
