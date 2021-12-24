@@ -1,0 +1,37 @@
+# Benchmarking on Colab
+
+using model sshleifer/distilbart-cnn-6-6
+Benchmarking Tokenizer.
+
+Norm Tokenizer | BS 8 | SL 128 | Time 0.5053
+Fast Tokenizer | BS 8 | SL 128 | Time 0.0047
+Norm Tokenizer | BS 8 | SL 256 | Time 0.4692
+Fast Tokenizer | BS 8 | SL 256 | Time 0.0073
+Norm Tokenizer | BS 8 | SL 512 | Time 0.9647
+Fast Tokenizer | BS 8 | SL 512 | Time 0.0139
+Norm Tokenizer | BS 8 | SL 1024 | Time 1.2278
+Fast Tokenizer | BS 8 | SL 1024 | Time 0.0279
+Norm Tokenizer | BS 16 | SL 128 | Time 0.3364
+Fast Tokenizer | BS 16 | SL 128 | Time 0.0078
+Norm Tokenizer | BS 16 | SL 256 | Time 0.7021
+Fast Tokenizer | BS 16 | SL 256 | Time 0.0143
+Norm Tokenizer | BS 16 | SL 512 | Time 1.3868
+Fast Tokenizer | BS 16 | SL 512 | Time 0.0288
+Norm Tokenizer | BS 16 | SL 1024 | Time 2.5529
+Fast Tokenizer | BS 16 | SL 1024 | Time 0.0518
+Norm Tokenizer | BS 32 | SL 128 | Time 0.6308
+Fast Tokenizer | BS 32 | SL 128 | Time 0.0144
+Norm Tokenizer | BS 32 | SL 256 | Time 1.2394
+Fast Tokenizer | BS 32 | SL 256 | Time 0.0270
+Norm Tokenizer | BS 32 | SL 512 | Time 2.4772
+Fast Tokenizer | BS 32 | SL 512 | Time 0.0528
+Norm Tokenizer | BS 32 | SL 1024 | Time 4.9720
+Fast Tokenizer | BS 32 | SL 1024 | Time 0.1031
+Norm Tokenizer | BS 64 | SL 128 | Time 1.2655
+Fast Tokenizer | BS 64 | SL 128 | Time 0.0293
+Norm Tokenizer | BS 64 | SL 256 | Time 2.5135
+Fast Tokenizer | BS 64 | SL 256 | Time 0.0536
+Norm Tokenizer | BS 64 | SL 512 | Time 5.2116
+Fast Tokenizer | BS 64 | SL 512 | Time 0.1080
+Norm Tokenizer | BS 64 | SL 1024 | Time 9.8045
+Fast Tokenizer | BS 64 | SL 1024 | Time 0.2034

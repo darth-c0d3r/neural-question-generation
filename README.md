@@ -13,7 +13,7 @@
 * Multiple Decoding Algorithm Options [done]
 * Intermediate Checkpoints [done]
 * Parallel Logging to file [done]
-* Use Fast Tokenizers
+* Use Fast Tokenizers [done]
 * Latency + Efficiency Benchmarking
 * Distributed Training and Inference
 * ONNX Optimization

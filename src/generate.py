@@ -49,7 +49,7 @@ def main(config):
 	device = get_device(int(config["gpu_idx"]))
 
 	# load the tokenizer and the model
-	tokenizer = AutoTokenizer.from_pretrained(config["tokenizer_name"])
+	tokenizer = AutoTokenizer.from_pretrained(config["tokenizer_name"], use_fast=True)
 	model = AutoModelForSeq2SeqLM.from_pretrained(config["model_name"]).to(device)
 
 	# call the pred routine
