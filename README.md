@@ -47,7 +47,7 @@ The first step is to remove questions which don't have answers. After that, we s
 | num unique answers | 86821 |
 
 
-<u>Train Set</u>
+<!-- <u>Train Set</u>
 num documents: 442
 num contexts: 19035
 num questions with answers: 86821
@@ -62,7 +62,7 @@ num questions without answers: 5945
 num unique answers: 10279
 
 <b>After Preprocessing</b>
-
+ -->
 analyzing ../data/squad/processed/splits/eval.tsv ...
 6it [00:00, 33.32it/s]
 stats for col context
