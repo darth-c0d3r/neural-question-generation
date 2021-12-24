@@ -38,22 +38,6 @@ The first step is to remove questions which don't have answers. After that, we s
 
 **Original Dataset**
 
-| Train Set | |
-| --- | --- |
-| num documents | 442 |
-| num contexts | 19035 |
-| num questions with answers | 86821 |
-| num questions without answers | 43498 |
-| num unique answers | 86821 |
-
-| Dev Set | |
-| --- | --- |
-| num documents | 35 |
-| num contexts | 1204 |
-| num questions with answers | 5928 |
-| num questions without answers | 5945 |
-| num unique answers | 10279 |
-
 | Split | Num Docs | Num Contexts | Ques w/ Ans | Ques w/o Ans | Num Unique Ans |
 | ----- | -------- | ------------ | ----------- | ------------ | -------------- |
 | Train | 442      | 19035        | 86821       | 43498        | 86821          |
@@ -66,8 +50,7 @@ The first step is to remove questions which don't have answers. After that, we s
 | Train | 80995    | 653,120,20 | 43,3,1 | 40,10,1  | 
 | Eval  | 5826     | 445,123,67 | 28,3,1 | 29,10,3  |
 | Test  | 10297    | 629,129,25 | 29,4,1 | 31,10,3  |
-
-\*: The numbers in the columns indicate max, avg, min number of words.
+The numbers in the columns indicate max, avg, min number of words.
 
 ## [Natural Questions](https://ai.google.com/research/NaturalQuestions) [Not Used]
 
@@ -131,7 +114,7 @@ TriviaQA is a realistic text-based question answering dataset which includes 950
 # preliminary stats on the squad dataset
 python3 squad.py --input_dir ../data/squad/raw/ --task raw_stats
 
-# prepare squad question answering data for consumption
+# prepare squad question answering data for consumption by converting to tsv
 python3 squad.py --input_dir ../data/squad/raw/ --output_dir ../data/squad/processed/ --task json2tsv
 
 # at this point manually split the train set into train and eval in ./splits
