@@ -36,7 +36,7 @@ The first step is to remove questions which don't have answers. After that, we s
 
 ### Stats
 
-<b>Original Dataset</b>
+**Original Dataset**
 
 | Train Set |
 | --- | --- |
