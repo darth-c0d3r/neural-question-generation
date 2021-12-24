@@ -1,6 +1,6 @@
 # Introduction
 
-[HuggingFace](https://huggingface.co/) is one of the most useful libraries for a NLP researcher / developer as it provides numerous pre-trained models, datasets, and tons of utility functions for NLP. In this repository, I'm trying to setup a complete pipeline for a Machine Learning project and the task I've chosen for the setup is Question Generation for Paragraphs. This is a seq2seq task for which I intend to fine-tune pre-trained encoder-decoder Transformer models for Extractive Summarization like BART / Pegasus.
+[HuggingFace](https://huggingface.co/) is one of the most useful libraries for a NLP researcher / developer as it provides numerous pre-trained models, datasets, and tons of utility functions for NLP. In this repository, I'm trying to setup a complete pipeline for a Machine Learning project and the task I've chosen for the setup is Question Generation for Paragraphs. This is a seq2seq task for which I intend to fine-tune a pre-trained encoder-decoder Transformer model for Extractive Summarization like BART / Pegasus.
 
 # Features / Goals
 
@@ -13,11 +13,12 @@
 * Multiple Decoding Algorithm Options [done]
 * Intermediate Checkpoints [done]
 * Parallel Logging to file [done]
+* Use Fast Tokenizers
 * Latency + Efficiency Benchmarking
 * Distributed Training and Inference
-* Model Distillation
-* Model Quantization
 * ONNX Optimization
+* Model Quantization
+* Model Distillation
 * Hosting using Streamlit / Gradio
 * Deploying on HuggingFace Hub
 
@@ -36,6 +37,15 @@ The first step is to remove questions which don't have answers. After that, we s
 ### Stats
 
 <b>Original Dataset</b>
+
+| Train Set |
+| --- | --- |
+| num documents | 442 |
+| num contexts | 19035 |
+| num questions with answers | 86821 |
+| num questions without answers | 43498 |
+| num unique answers | 86821 |
+
 
 <u>Train Set</u>
 num documents: 442
@@ -166,7 +176,16 @@ TriviaQA is a realistic text-based question answering dataset which includes 950
 |	|-- create_lmdb.py
 |-- src
 |	|-- util.py
+|	|-- plotting.py
 |	|-- dataset.py
+|	|-- train.py
+|	|-- evaluate.py
+|	|-- predict.py
+|	|-- generate.py
+|-- config
+|	|-- train.config
+|	|-- eval.config
+|	|-- pred.config
 |-- vis
 |	|-- tsv_viewer.py
 |-- stats
@@ -213,7 +232,3 @@ python3 generate.py --config_filename ../config/pred.config
 streamlit run tsv_viewer.py -- --input_path ../logs/pred/run_6/eval.tsv
 
 ```
-
-# ToDo / Points to Ponder
-
-* Have a Start token for decoder input?
