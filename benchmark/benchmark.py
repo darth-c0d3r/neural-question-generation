@@ -1,4 +1,4 @@
-# use this script to benchmark tokenizers, models, decoding algos
+# use this script to benchmark tokenizers and models 
 # feel free to add own tests here
 # pending support for onnx, quantization, fp16 etc
 
@@ -12,9 +12,21 @@
 
 # Fix an input of n words
 # get times for encoder and decoder
-# vary sequence lengths
+# vary batch sizes, sequence lengths
 # compare fast and slow tokenizer
 # ======================================================== #
+
+# ======================================================== #
+# HOW TO BENCHMARK A MODEL
+
+# Fix an input of n words
+# Fix a tokenizer
+# get times for generation
+# vary batch sizes, sequence lengths
+# compare across generation algos
+# like beam size, length_penalty etc.s
+# ======================================================== #
+
 
 # probably don't change these unless you have good reason
 RANDOM_SEED = 42
@@ -22,6 +34,7 @@ WORDLIST_FILENAME = "wordlist.txt"
 
 import argparse
 from time import time
+import itertools
 
 import random
 random.seed(RANDOM_SEED)
@@ -69,12 +82,33 @@ def benchmark_tokenizer(tokenizer, input_text, max_length):
 
 	return (end - start)/NUM_ITERS
 
+def benchmark_model(model, batch, decode_params):
+	"""
+	just do a forward pass of the model
+	with a decoding algorithm
+	no need to do detokenization as it
+	is already benchmarked in tokenizer
+	"""
+
+	NUM_ITERS = 10
+
+	start = time()
+
+	for _ in range(NUM_ITERS):
+
+		model_out = model.generate(**batch, **decode_params)
+
+	end = time()
+
+	return (end-start)/NUM_ITERS;
+
 def main(args):
 	"""
 	the main driver function to run everything
 	"""
 
-	do_tokenizer = True
+	do_tokenizer = False
+	do_model = True
 
 
 	model_name = "sshleifer/distilbart-cnn-6-6"
@@ -87,7 +121,7 @@ def main(args):
 	# ========================= #
 
 	if do_tokenizer is True:
-		print("Benchmarking Tokenizer.\n")
+		print("\nBenchmarking Tokenizer.\n")
 
 		batch_size = [8,16,32,64]
 		sequence_length = [128, 256, 512, 1024]
@@ -95,13 +129,49 @@ def main(args):
 		tokenizer_norm = AutoTokenizer.from_pretrained(model_name, use_fast=False)
 		tokenizer_fast = AutoTokenizer.from_pretrained(model_name, use_fast=True )
 
-		for bs in batch_size:
-			for sl in sequence_length:
+		for bs, sl in itertools.product(*[batch_size, sequence_length]):
 
-				input_text = get_input_text(bs, sl)
+			input_text = get_input_text(bs, sl)
 
-				print(f"Norm Tokenizer | BS {bs} | SL {sl} | Time {benchmark_tokenizer(tokenizer_norm, input_text, sl):.4f}")
-				print(f"Fast Tokenizer | BS {bs} | SL {sl} | Time {benchmark_tokenizer(tokenizer_fast, input_text, sl):.4f}")
+			print(f"Norm Tokenizer | BS {bs} | SL {sl} | Time {benchmark_tokenizer(tokenizer_norm, input_text, sl):.4f}")
+			print(f"Fast Tokenizer | BS {bs} | SL {sl} | Time {benchmark_tokenizer(tokenizer_fast, input_text, sl):.4f}")
+
+
+	# ================================= #
+	# benchmark transformer models here #
+	# ================================= #
+
+	if do_model is True:
+		print("\nBenchmarking Model.\n")
+
+		batch_size = [8,16,32]
+		sequence_length = [128,256,512]
+		beam_size = [1,2,3,4]
+
+		tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
+		model = AutoModelForSeq2SeqLM.from_pretrained(model_name).to(device)
+
+		# Add ONNX / Quantization / Whatever support here
+
+		for bs, sl in itertools.product(*[batch_size, sequence_length]):
+
+			input_text = get_input_text(bs, sl)
+			source = tokenizer(input_text, max_length=sl, padding='longest', truncation=True, return_tensors='pt')
+
+			batch = {'input_ids': source['input_ids'].to(device), 
+						'attention_mask': source['attention_mask'].to(device)}
+
+			decode_params = { # NON DEFAULT PARAMS HERE
+				"min_length": 8, "length_penalty": 1.0,
+			}
+
+			for beam in beam_size:
+
+				decode_params["num_beams"] = beam
+				time = benchmark_model(model, batch, decode_params)
+
+				print(f"Model | BS {bs} | SL {sl} | Beams {beam} | Time {time:.4f}")
+
 
 if __name__ == '__main__':
 

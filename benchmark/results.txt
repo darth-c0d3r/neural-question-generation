@@ -35,3 +35,45 @@ Norm Tokenizer | BS 64 | SL 512 | Time 5.2116
 Fast Tokenizer | BS 64 | SL 512 | Time 0.1080
 Norm Tokenizer | BS 64 | SL 1024 | Time 9.8045
 Fast Tokenizer | BS 64 | SL 1024 | Time 0.2034
+
+using device cuda:0
+using model sshleifer/distilbart-cnn-6-6
+
+Benchmarking Model.
+
+Model | BS 8 | SL 128 | Beams 1 | Time 1.1371
+Model | BS 8 | SL 128 | Beams 2 | Time 2.0029
+Model | BS 8 | SL 128 | Beams 3 | Time 2.5252
+Model | BS 8 | SL 128 | Beams 4 | Time 2.7710
+Model | BS 8 | SL 256 | Beams 1 | Time 1.6032
+Model | BS 8 | SL 256 | Beams 2 | Time 2.1392
+Model | BS 8 | SL 256 | Beams 3 | Time 2.2454
+Model | BS 8 | SL 256 | Beams 4 | Time 2.7367
+Model | BS 8 | SL 512 | Beams 1 | Time 1.8484
+Model | BS 8 | SL 512 | Beams 2 | Time 2.7203
+Model | BS 8 | SL 512 | Beams 3 | Time 3.2476
+Model | BS 8 | SL 512 | Beams 4 | Time 3.7545
+Model | BS 16 | SL 128 | Beams 1 | Time 1.7534
+Model | BS 16 | SL 128 | Beams 2 | Time 2.8036
+Model | BS 16 | SL 128 | Beams 3 | Time 3.5154
+Model | BS 16 | SL 128 | Beams 4 | Time 3.9262
+Model | BS 16 | SL 256 | Beams 1 | Time 2.1401
+Model | BS 16 | SL 256 | Beams 2 | Time 3.2537
+Model | BS 16 | SL 256 | Beams 3 | Time 4.0599
+Model | BS 16 | SL 256 | Beams 4 | Time 4.8438
+Model | BS 16 | SL 512 | Beams 1 | Time 2.7694
+Model | BS 16 | SL 512 | Beams 2 | Time 4.0959
+Model | BS 16 | SL 512 | Beams 3 | Time 5.0957
+Model | BS 16 | SL 512 | Beams 4 | Time 6.0295
+Model | BS 32 | SL 128 | Beams 1 | Time 2.3992
+Model | BS 32 | SL 128 | Beams 2 | Time 4.4048
+Model | BS 32 | SL 128 | Beams 3 | Time 6.0350
+Model | BS 32 | SL 128 | Beams 4 | Time 7.5984
+Model | BS 32 | SL 256 | Beams 1 | Time 2.8456
+Model | BS 32 | SL 256 | Beams 2 | Time 5.4221
+Model | BS 32 | SL 256 | Beams 3 | Time 7.6085
+Model | BS 32 | SL 256 | Beams 4 | Time 9.0678
+Model | BS 32 | SL 512 | Beams 1 | Time 4.3321
+Model | BS 32 | SL 512 | Beams 2 | Time 7.8130
+Model | BS 32 | SL 512 | Beams 3 | Time 10.0786
+Model | BS 32 | SL 512 | Beams 4 | Time 12.0805
