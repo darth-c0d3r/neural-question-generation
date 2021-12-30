@@ -2,7 +2,7 @@
 
 ## 1. Effect of Fast Tokenizer
 
-Tokenizer: `sshleifer/distilbart-cnn-6-6`
+Tokenizer: `sshleifer/distilbart-cnn-6-6` <br>
 Device: `Colab CPU` (doesn't matter in this case)
 
 | Batch Size / Seq. Len. |        128       |        256       |        512       |       1024       | Average Speedup |
@@ -13,14 +13,14 @@ Device: `Colab CPU` (doesn't matter in this case)
 |           64           | 1.2655 -> 0.0293 | 2.5135 -> 0.0536 | 5.2116 -> 0.1080 | 9.8045 -> 0.2034 |      46.6x      | 
 |     Average Speedup    |      59.4x       |      51.5x       |      53.2x       |      47.4x       |      52.9x      |
 
-`->` indicates the change in inference time from normal to fast tokenizer.
+`->` indicates the change in inference time from normal to fast tokenizer.  <br>
 All numbers are reported for the average time taken (in seconds) to finish a single batch.
 
 **Conclusion** : Always use Fast Tokenizers if available.
 
 ## 2. Model Benchmarks on GPU
 
-Model: `sshleifer/distilbart-cnn-6-6`
+Model: `sshleifer/distilbart-cnn-6-6` <br>
 Device: `Tesla K80`
 
 **Beam Size = 1 [Greedy Decoding]**
@@ -58,12 +58,12 @@ Device: `Tesla K80`
 |           16           | 3.9262 | 4.8438 | 6.0295 | 
 |           32           | 7.5984 | 9.0678 | 12.080 | 
 
-All numbers are reported for the average time taken (in seconds) to finish a single batch.
+All numbers are reported for the average time taken (in seconds) to finish a single batch. <br>
 Use these raw numbers as reference for comparison with other benchmarks.
 
 ## 3. Effect of Quantization
 
-Model: `sshleifer/distilbart-cnn-6-6`
+Model: `sshleifer/distilbart-cnn-6-6` <br>
 Device: `CPU (Quantization only supports CPU)`
 
 **Beam Size = 1 [Greedy Decoding]**
@@ -84,8 +84,11 @@ Device: `CPU (Quantization only supports CPU)`
 |     Average Speedup    |           1.45x           |           1.30x           |       1.37x     |
 
 
-All numbers are reported for the average time taken (in seconds) to finish a single batch.
-You can expect a speedup of ~1.4x if you use dynamic quantization on your model directly on CPU.
-However the eval loss goes from `1.499` to `3.828` while using quantization directly and the resulting model outputs are visibly worse.
-Therefore, without quantization aware training, this is not a viable optimization for text generation.
-Also, using a GPU is just much faster as compared to CPU (more than 12x speedup).
+All numbers are reported for the average time taken (in seconds) to finish a single batch. <br>
+
+**Conclusions** : 
+
+* You can expect a speedup of ~1.4x if you use dynamic quantization on your model directly on CPU.
+* However the eval loss goes from `1.499` to `3.828` and the resulting model outputs are visibly worse.
+* Therefore, without quantization aware training, this is not a viable optimization for text generation.
+* Also, using a GPU is just much faster as compared to CPU (more than 12x speedup).
