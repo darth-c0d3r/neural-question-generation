@@ -64,7 +64,7 @@ Use these raw numbers as reference for comparison with other benchmarks.
 ## 3. Effect of Quantization
 
 Model: `sshleifer/distilbart-cnn-6-6` <br>
-Device: `CPU (Quantization only supports CPU)`
+Device: `CPU` (Quantization only supports CPU)
 
 **Beam Size = 1 [Greedy Decoding]**
 
