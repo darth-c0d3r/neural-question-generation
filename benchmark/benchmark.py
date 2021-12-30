@@ -90,7 +90,7 @@ def benchmark_model(model, batch, decode_params):
 	is already benchmarked in tokenizer
 	"""
 
-	NUM_ITERS = 10
+	NUM_ITERS = 2
 
 	start = time()
 
@@ -109,7 +109,7 @@ def main(args):
 
 	do_tokenizer = False
 	do_model = True
-
+	do_model_quantized = True
 
 	model_name = "sshleifer/distilbart-cnn-6-6"
 	device = torch.device(args.gpu_idx if args.gpu_idx >= 0 else 'cpu')
@@ -144,9 +144,9 @@ def main(args):
 	if do_model is True:
 		print("\nBenchmarking Model.\n")
 
-		batch_size = [8,16,32]
-		sequence_length = [128,256,512]
-		beam_size = [1,2,3,4]
+		batch_size = [16,32]
+		sequence_length = [256,512]
+		beam_size = [1,4]
 
 		tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
 		model = AutoModelForSeq2SeqLM.from_pretrained(model_name).to(device)
@@ -171,6 +171,41 @@ def main(args):
 				time = benchmark_model(model, batch, decode_params)
 
 				print(f"Model | BS {bs} | SL {sl} | Beams {beam} | Time {time:.4f}")
+
+
+	# ================================= #
+	# benchmark transformer quantized models here #
+	# ================================= #
+
+	if do_model_quantized is True:
+		print("\nBenchmarking quantized Model.\n")
+
+		batch_size = [16,32]
+		sequence_length = [256,512]
+		beam_size = [1,4]
+
+		tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
+		model = AutoModelForSeq2SeqLM.from_pretrained(model_name).to(device)
+		model = torch.quantization.quantize_dynamic(model, {torch.nn.Linear}, dtype=torch.qint8)
+
+		for bs, sl in itertools.product(*[batch_size, sequence_length]):
+
+			input_text = get_input_text(bs, sl)
+			source = tokenizer(input_text, max_length=sl, padding='longest', truncation=True, return_tensors='pt')
+
+			batch = {'input_ids': source['input_ids'].to(device), 
+						'attention_mask': source['attention_mask'].to(device)}
+
+			decode_params = { # NON DEFAULT PARAMS HERE
+				"min_length": 8, "length_penalty": 1.0,
+			}
+
+			for beam in beam_size:
+
+				decode_params["num_beams"] = beam
+				time = benchmark_model(model, batch, decode_params)
+
+				print(f"Quant Model | BS {bs} | SL {sl} | Beams {beam} | Time {time:.4f}")
 
 
 if __name__ == '__main__':

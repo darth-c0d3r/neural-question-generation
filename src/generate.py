@@ -52,6 +52,11 @@ def main(config):
 	tokenizer = AutoTokenizer.from_pretrained(config["tokenizer_name"], use_fast=True)
 	model = AutoModelForSeq2SeqLM.from_pretrained(config["model_name"]).to(device)
 
+	# quantize the model if the flag is set
+	if config["quantize"] is True:
+		model = torch.quantization.quantize_dynamic(model, {torch.nn.Linear}, dtype=torch.qint8)
+		print("Model quantized.")
+
 	# call the pred routine
 	predict(tokenizer, model, device, config)
 

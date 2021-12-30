@@ -60,6 +60,11 @@ def main(config):
 	tokenizer = AutoTokenizer.from_pretrained(config["tokenizer_name"], use_fast=True)
 	model = AutoModelForSeq2SeqLM.from_pretrained(config["model_name"]).to(device)
 
+	# quantize the model if the flag is set
+	if config["quantize"] is True:
+		model = torch.quantization.quantize_dynamic(model, {torch.nn.Linear}, dtype=torch.qint8)
+		print("Model quantized.")
+
 	# get the dataloaders
 	dataloader = get_QuestionGeneration_dataloaders(config["dataset_file"], tokenizer, 
 				config["dataset_batch_size"], config["max_src_len"], config["max_tgt_len"])

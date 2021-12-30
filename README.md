@@ -14,10 +14,10 @@
 * Intermediate Checkpoints [done]
 * Parallel Logging to file [done]
 * Use Fast Tokenizers [done]
-* Latency + Efficiency Benchmarking
+* Latency + Efficiency Benchmarking [done]
 * Distributed Training and Inference
 * ONNX Optimization
-* Model Quantization
+* Model Quantization [done]
 * Model Distillation
 * Hosting using Streamlit / Gradio
 * Deploying on HuggingFace Hub
@@ -104,6 +104,18 @@ TriviaQA is a realistic text-based question answering dataset which includes 950
 |	|-- tsv_viewer.py
 |-- stats
 |	|-- [stats related files]
+|-- benchmark
+|	|-- benchmark.py
+|	|-- wordlist.txt
+|	|-- results.txt
+|-- logs
+|	|-- train
+|	|	|-- run_4 [20 epochs, no scheduler]
+|	|	|-- run_6 [4 epochs and scheduler]
+|	|-- pred
+|	|	|-- run_2 [default decoding params]
+|	|	|-- run_3 [adjusted decoding params]
+|	|	|-- run_4 [dynamic quantized pred]
 
 * : file created programmatically
 ```

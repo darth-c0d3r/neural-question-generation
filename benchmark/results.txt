@@ -77,3 +77,36 @@ Model | BS 32 | SL 512 | Beams 1 | Time 4.3321
 Model | BS 32 | SL 512 | Beams 2 | Time 7.8130
 Model | BS 32 | SL 512 | Beams 3 | Time 10.0786
 Model | BS 32 | SL 512 | Beams 4 | Time 12.0805
+
+# Quantization Experiments
+
+Model Size => 844.7 MB -> 422.6 MB
+
+using device cpu
+using model sshleifer/distilbart-cnn-6-6
+
+Benchmarking Model.
+
+Model | BS 16 | SL 256 | Beams 1 | Time 26.7303
+Model | BS 16 | SL 256 | Beams 4 | Time 58.3237
+Model | BS 16 | SL 512 | Beams 1 | Time 41.4051
+Model | BS 16 | SL 512 | Beams 4 | Time 82.7789
+Model | BS 32 | SL 256 | Beams 1 | Time 45.1856
+Model | BS 32 | SL 256 | Beams 4 | Time 116.7534
+Model | BS 32 | SL 512 | Beams 1 | Time 72.6482
+Model | BS 32 | SL 512 | Beams 4 | Time 165.4652
+
+eval	loss:  1.499
+
+Benchmarking quantized Model.
+
+Quant Model | BS 16 | SL 256 | Beams 1 | Time 16.7891
+Quant Model | BS 16 | SL 256 | Beams 4 | Time 40.7531
+Quant Model | BS 16 | SL 512 | Beams 1 | Time 27.5787
+Quant Model | BS 16 | SL 512 | Beams 4 | Time 63.3424
+Quant Model | BS 32 | SL 256 | Beams 1 | Time 30.8891
+Quant Model | BS 32 | SL 256 | Beams 4 | Time 80.3119
+Quant Model | BS 32 | SL 512 | Beams 1 | Time 55.2227
+Quant Model | BS 32 | SL 512 | Beams 4 | Time 124.3614
+
+eval	loss:  3.828
