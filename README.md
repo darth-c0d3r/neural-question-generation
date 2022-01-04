@@ -1,6 +1,16 @@
+---
+language: en
+tags:
+- summarization
+- question-generation
+license: apache-2.0
+datasets:
+- squad
+---
+
 # Introduction
 
-[HuggingFace](https://huggingface.co/) is one of the most useful libraries for a NLP researcher / developer as it provides numerous pre-trained models, datasets, and tons of utility functions for NLP. In this repository, I'm trying to setup a complete pipeline for a Machine Learning project and the task I've chosen for the setup is Question Generation for Paragraphs. This is a seq2seq task for which I intend to fine-tune a pre-trained encoder-decoder Transformer model for Extractive Summarization like BART / Pegasus.
+[HuggingFace](https://huggingface.co/) is one of the most useful libraries for a NLP researcher / developer as it provides numerous pre-trained models, datasets, and tons of utility functions for NLP. In this repository, I'm trying to setup a complete pipeline for a Machine Learning project and the task I've chosen for the setup is Question Generation for Paragraphs. This is a seq2seq task for which I intend to fine-tune a pre-trained encoder-decoder Transformer model for Extractive Summarization like BART / Pegasus. More specifically, I'm finetuning the `sshleifer/distilbart-cnn-6-6` model on the SQuAD dataset.
 
 # Features / Goals
 
@@ -16,11 +26,11 @@
 * Use Fast Tokenizers [done]
 * Latency + Efficiency Benchmarking [done]
 * Distributed Training and Inference
-* ONNX Optimization
+* ONNX Optimization [not implemented in hgfc]
 * Model Quantization [done]
 * Model Distillation
 * Hosting using Streamlit / Gradio
-* Deploying on HuggingFace Hub
+* Deploying on HuggingFace Hub [done]
 
 # Dataset
 
@@ -142,16 +152,16 @@ streamlit run tsv_viewer.py -- --input_path ../data/squad/processed/splits/eval.
 python3 -m grpc_tools.protoc -I./proto --python_out=./proto ./proto/data_item.proto
 python3 create_lmdb.py --input_path ../data/squad/processed/splits/ --output_path ../data/squad/processed/splits/lmdb/
 
-# training routing
+# training routine [adjust params in config]
 python3 train.py --config_filename ../config/train.config
 
-# evaluation routing
+# evaluation routine [adjust params in config]
 python3 evaluate.py --config_filename ../config/eval.config
 
-# get predictions
+# get predictions [adjust params in config]
 python3 predict.py --config_filename ../config/pred.config
 
-# to get interactive predictions
+# to get interactive predictions [adjust params in config]
 python3 generate.py --config_filename ../config/pred.config
 
 # view the results using streamlit
