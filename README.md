@@ -1,13 +1,3 @@
----
-language: en
-tags:
-- summarization
-- question-generation
-license: apache-2.0
-datasets:
-- squad
----
-
 # Introduction
 
 [HuggingFace](https://huggingface.co/) is one of the most useful libraries for a NLP researcher / developer as it provides numerous pre-trained models, datasets, and tons of utility functions for NLP. In this repository, I'm trying to setup a complete pipeline for a Machine Learning project and the task I've chosen for the setup is Question Generation for Paragraphs. This is a seq2seq task for which I intend to fine-tune a pre-trained encoder-decoder Transformer model for Extractive Summarization like BART / Pegasus. More specifically, I'm finetuning the `sshleifer/distilbart-cnn-6-6` model on the SQuAD dataset.
@@ -168,3 +158,9 @@ python3 generate.py --config_filename ../config/pred.config
 streamlit run tsv_viewer.py -- --input_path ../logs/pred/run_6/eval.tsv
 
 ```
+
+# Huggingface Hub
+
+1. Instructions on uploading model to hub. [Link](https://huggingface.co/docs/transformers/model_sharing)
+	- Remember to update the default config file with required decoding parameters.
+2. Link to my finetuned 6-6 QGen Model. [Link](https://huggingface.co/gpssohi/distilbart-qgen-6-6)
