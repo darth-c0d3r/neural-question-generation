@@ -22,7 +22,8 @@ if __name__ == '__main__':
 	filename = "train.py"
 
 	if args.world_size == 0: # zero GPUs available; launch cpu training only
-		os.system(f"python3 {filename} --config_filename {args.config_filename} {' '.join(unknown)}")
+		os.system(f"python3 {filename} --config_filename {args.config_filename}\
+					--gpu_idx -1 {' '.join(unknown)}")
 
 
 	else: # distributed training here
