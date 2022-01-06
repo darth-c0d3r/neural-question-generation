@@ -172,4 +172,4 @@ if __name__ == '__main__':
 	print()
 
 	# call the main function to set things up
-	main(config)
+	# main(config)

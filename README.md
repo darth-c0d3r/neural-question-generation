@@ -92,6 +92,7 @@ TriviaQA is a realistic text-based question answering dataset which includes 950
 |	|-- util.py
 |	|-- plotting.py
 |	|-- dataset.py
+|	|-- launch_distributed_train.py
 |	|-- train.py
 |	|-- evaluate.py
 |	|-- predict.py
@@ -105,7 +106,7 @@ TriviaQA is a realistic text-based question answering dataset which includes 950
 |-- stats
 |	|-- [stats related files]
 |-- benchmark
-|	|-- benchmark.py
+|	|-- benchmark.py* Distributed Training and Inference
 |	|-- wordlist.txt
 |	|-- results.txt
 |-- logs
