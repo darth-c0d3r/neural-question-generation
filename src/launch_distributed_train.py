@@ -23,7 +23,7 @@ if __name__ == '__main__':
 
 	if args.world_size == 0: # zero GPUs available; launch cpu training only
 		os.system(f"python3 {filename} --config_filename {args.config_filename}\
-					--gpu_idx -1 {' '.join(unknown)}")
+					--local_rank -1 {' '.join(unknown)}")
 
 
 	else: # distributed training here
@@ -32,7 +32,7 @@ if __name__ == '__main__':
 		PORT = str(random.randint(10000, 65536))
 
 		os.system(f"python3 -m torch.distributed.launch \
-				  --nproc_per_node={args.gpus} --nnodes={args.nodes} \
-				  --node_rank={args.rank} --master_addr=\"{IP}\" --master_port={PORT} \
+				  --nproc_per_node {args.gpus} --nnodes {args.nodes} \
+				  --node_rank {args.rank} --master_addr \"{IP}\" --master_port {PORT} \
 				   {filename} \
-				  --config_filename={args.config_filename} {' '.join(unknown)}")
+				  --config_filename {args.config_filename} {' '.join(unknown)}")
