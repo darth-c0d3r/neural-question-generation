@@ -142,6 +142,8 @@ if __name__ == '__main__':
 	parser.add_argument("--config_filename", type=str, required=True, help="config filename")
 	args, unknown = parser.parse_known_args()
 
+	print("unknown", unknown)
+
 	# make sure that the config file exists
 	assert Path(args.config_filename).is_file()
 
