@@ -144,17 +144,17 @@ def main(config):
 					config["dataset_batch_size"], config["max_src_len"], config["max_tgt_len"])
 	
 	if config['gpu_idx'] != -1:
-		train_sampler = DistributedSampler(dataloaders['train'], 
+		train_sampler = DistributedSampler(dataloaders['train'].dataset, 
 						num_replicas=torch.distributed.get_world_size(), rank=device_rank)
 
 		dataloaders['train'] = DataLoader(
-										dataloaders['train'],
+										dataloaders['train'].dataset,
 										batch_size = config['dataset_batch_size'],
 										shuffle = False,
 										num_workers = 2,
 										pin_memory = True,
 										sampler = train_sampler,
-										collate_fn = dataloaders['train'].collate_fn
+										collate_fn = dataloaders['train'].dataset.collate_fn
 									)
 
 
