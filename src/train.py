@@ -60,7 +60,7 @@ def train(tokenizer, model, dataloaders, optimizer, scheduler, device, device_ra
 
 			source_ids, source_mask, target_ids, labels = source_ids.to(device), source_mask.to(device), target_ids.to(device), labels.to(device)
 
-			print(device_rank, source_ids.shape)
+			print(device_rank, source_ids.shape, num_batches)
 			return
 
 			# flush the gradients
