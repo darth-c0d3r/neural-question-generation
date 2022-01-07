@@ -10,6 +10,7 @@ from tqdm import tqdm
 import numpy as np
 import torch
 import torch.optim as optim
+from torch.utils.data import DataLoader
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 from util import read_json, parse_unknown_args, insert_unknown_args, get_unique_path
@@ -131,10 +132,29 @@ def main(config):
 	# load the tokenizer and the model
 	tokenizer = AutoTokenizer.from_pretrained(config["tokenizer_name"], use_fast=True)
 	model = AutoModelForSeq2SeqLM.from_pretrained(config["model_name"]).to(device)
+	
+	if config['gpu_idx'] != -1:
+		model = nn.parallel.DistributedDataParallel(model, device_ids=[config['gpu_idx']], \
+													output_device=config['gpu_idx'])
 
 	# get the dataloaders
 	dataloaders = get_QuestionGeneration_dataloaders(config["dataset_dir"], tokenizer, 
 					config["dataset_batch_size"], config["max_src_len"], config["max_tgt_len"])
+	
+	if config['gpu_idx'] != -1:
+		train_sampler = DistributedSampler(dataloaders['train'], 
+						num_replicas=torch.distributed.get_world_size(), rank=device_rank)
+
+		dataloaders['train'] = DataLoader(
+										dataloaders['train'],
+										batch_size = config['batch_size'],
+										shuffle = False,
+										num_workers = 2,
+										pin_memory = True,
+										sampler = train_sampler,
+										collate_fn = dataloaders['train'].collate_fn
+									)
+
 
 	# declare the optimizers and LR schedulers
 	optimizer = optim.Adam(list(model.parameters()), lr=config["learning_rate"], betas=(0.9, 0.999))
@@ -193,9 +213,9 @@ if __name__ == '__main__':
 		# set up parallel logging
 		sys.stdout = Logger(os.path.join(config["logs_folder"], "logfile.log"))
 
-	# pretty print the config file
-	print(json5.dumps(config, indent=4))
-	print()
+		# pretty print the config file
+		print(json5.dumps(config, indent=4))
+		print()
 
 	# call the main function to set things up
 	main(config)
