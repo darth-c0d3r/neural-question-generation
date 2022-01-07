@@ -12,6 +12,7 @@ import torch
 import torch.optim as optim
 import torch.nn as nn
 from torch.utils.data import DataLoader
+from torch.utils.data.distributed import DistributedSampler
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 from util import read_json, parse_unknown_args, insert_unknown_args, get_unique_path
