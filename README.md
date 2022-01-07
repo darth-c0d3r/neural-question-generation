@@ -92,7 +92,7 @@ TriviaQA is a realistic text-based question answering dataset which includes 950
 |	|-- util.py
 |	|-- plotting.py
 |	|-- dataset.py
-|	|-- launch_distributed_train.py
+|	|-- distribute.py
 |	|-- train.py
 |	|-- evaluate.py
 |	|-- predict.py
@@ -106,7 +106,7 @@ TriviaQA is a realistic text-based question answering dataset which includes 950
 |-- stats
 |	|-- [stats related files]
 |-- benchmark
-|	|-- benchmark.py* Distributed Training and Inference
+|	|-- benchmark.py
 |	|-- wordlist.txt
 |	|-- results.txt
 |-- logs
@@ -144,6 +144,7 @@ python3 -m grpc_tools.protoc -I./proto --python_out=./proto ./proto/data_item.pr
 python3 create_lmdb.py --input_path ../data/squad/processed/splits/ --output_path ../data/squad/processed/splits/lmdb/
 
 # training routine [adjust params in config]
+python3 distribute.py --filename train.py --config_filename ../config/train.config --nodes 1 --gpus 4 --rank 0
 python3 train.py --config_filename ../config/train.config
 
 # evaluation routine [adjust params in config]
