@@ -148,10 +148,7 @@ if __name__ == '__main__':
 	# set up the argument parser
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--config_filename", type=str, required=True, help="config filename")
-	parser.add_argument("--local_rank", type=int, default=-1, help="gpu_idx placeholder")
 	args, unknown = parser.parse_known_args()
-
-	print("unknown", unknown)
 
 	# make sure that the config file exists
 	assert Path(args.config_filename).is_file()
@@ -172,7 +169,8 @@ if __name__ == '__main__':
 	Path(config["ckpts_folder"]).mkdir(parents=False, exist_ok=False)
 
 	# set gpu_idx = local_rank
-	config["gpu_idx"] = int(args.local_rank)
+	if 'LOCAL_RANK' not in os.environ: os.environ['LOCAL_RANK'] = '-1'
+	config["gpu_idx"] = int(os.environ['LOCAL_RANK'])
 
 	# save the current config file in the logs folder
 	with open(os.path.join(config["logs_folder"], Path(args.config_filename).name), "w+") as f:

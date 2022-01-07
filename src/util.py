@@ -62,7 +62,7 @@ def setup_multiprocessing(gpu_idx):
 
 	print(f"World Size: {dist.get_world_size()} \t Local Rank: {dist.get_rank()} \t GPU Idx {gpu_idx}")
 
-    return dist.get_rank()
+	return dist.get_rank()
 
 def read_json(json_filename):
 	"""
