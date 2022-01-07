@@ -13,7 +13,7 @@ import torch.optim as optim
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 from util import read_json, parse_unknown_args, insert_unknown_args, get_unique_path
-from util import get_device, pretty_print_results, save_model, Logger
+from util import get_device, pretty_print_results, save_model, Logger, setup_multiprocessing
 
 from dataset import get_QuestionGeneration_dataloaders
 from evaluate import evaluate
