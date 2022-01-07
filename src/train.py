@@ -114,7 +114,15 @@ def main(config):
 	"""
 
 	# get the device
-	device = get_device(int(config["gpu_idx"]))
+
+	if config["gpu_idx"] != -1: # GPU training
+		gpu_rank = setup_multiprocessing(config["gpu_idx"])
+		device = get_device(config["gpu_idx"])
+		torch.cuda.set_device(device)
+	else:
+		device = get_device(config["gpu_idx"])
+
+	return
 
 	# load the tokenizer and the model
 	tokenizer = AutoTokenizer.from_pretrained(config["tokenizer_name"], use_fast=True)
@@ -132,7 +140,7 @@ def main(config):
 	# scheduler = None
 
 	# call the train routine
-	train(tokenizer, model, dataloaders, optimizer, scheduler, device, config)
+	# train(tokenizer, model, dataloaders, optimizer, scheduler, device, config)
 
 
 if __name__ == '__main__':
@@ -164,7 +172,7 @@ if __name__ == '__main__':
 	Path(config["ckpts_folder"]).mkdir(parents=False, exist_ok=False)
 
 	# set gpu_idx = local_rank
-	config["gpu_idx"] = args.local_rank
+	config["gpu_idx"] = int(args.local_rank)
 
 	# save the current config file in the logs folder
 	with open(os.path.join(config["logs_folder"], Path(args.config_filename).name), "w+") as f:
@@ -178,4 +186,4 @@ if __name__ == '__main__':
 	print()
 
 	# call the main function to set things up
-	# main(config)
+	main(config)

@@ -144,6 +144,7 @@ python3 -m grpc_tools.protoc -I./proto --python_out=./proto ./proto/data_item.pr
 python3 create_lmdb.py --input_path ../data/squad/processed/splits/ --output_path ../data/squad/processed/splits/lmdb/
 
 # training routine [adjust params in config]
+# set --gpus 0 for CPU training
 python3 distribute.py --filename train.py --config_filename ../config/train.config --nodes 1 --gpus 4 --rank 0
 python3 train.py --config_filename ../config/train.config
 
