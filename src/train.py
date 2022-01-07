@@ -28,10 +28,11 @@ def train(tokenizer, model, dataloaders, optimizer, scheduler, device, device_ra
 	config for other params
 	"""
 
-	print("\n" + "="*10 + "TRAINING LOGS" + "="*10 + "\n")
+	if device_rank == 0:
+		print("\n" + "="*10 + "TRAINING LOGS" + "="*10 + "\n")
 
-	# initialize the plotters
-	loss_plotter = Plotter(config["logs_folder"], "loss.png", "Loss Values", ["train", "eval"], config["num_evals_per_epoch"])
+		# initialize the plotters
+		loss_plotter = Plotter(config["logs_folder"], "loss.png", "Loss Values", ["train", "eval"], config["num_evals_per_epoch"])
 	
 	# get the eval frequency
 	num_batches = int(np.ceil(len(dataloaders["train"].dataset)/config["dataset_batch_size"]))
@@ -59,6 +60,9 @@ def train(tokenizer, model, dataloaders, optimizer, scheduler, device, device_ra
 
 			source_ids, source_mask, target_ids, labels = source_ids.to(device), source_mask.to(device), target_ids.to(device), labels.to(device)
 
+			print(device_rank, source_ids.shape)
+			return
+
 			# flush the gradients
 			optimizer.zero_grad()
 
@@ -78,7 +82,7 @@ def train(tokenizer, model, dataloaders, optimizer, scheduler, device, device_ra
 			total_seqs += len(source_ids)
 
 			# it's eval time!
-			if batch_idx % eval_every_batch == 0:
+			if (device_rank == 0) and (batch_idx % eval_every_batch == 0):
 
 				pretty_print_results("train", epoch, config["num_epochs"], batch_idx+1, 
 							num_batches, loss, total_loss, total_seqs)
@@ -101,12 +105,13 @@ def train(tokenizer, model, dataloaders, optimizer, scheduler, device, device_ra
 
 				print()
 
-		# basic eval after the epoch
-		_ = evaluate(tokenizer, model, dataloaders["eval"], device, epoch, config["num_epochs"], "EPOCH", "END")
+		if device_rank == 0:
+			# basic eval after the epoch
+			_ = evaluate(tokenizer, model, dataloaders["eval"], device, epoch, config["num_epochs"], "EPOCH", "END")
 
-		# save intermediate checkpoints
-		save_model(model, config["ckpts_folder"], f"epoch")
-		print()
+			# save intermediate checkpoints
+			save_model(model, config["ckpts_folder"], f"epoch")
+			print()
 
 def main(config):
 	"""
@@ -122,8 +127,6 @@ def main(config):
 	else:
 		device_rank = 0
 		device = get_device(config["gpu_idx"])
-
-	return
 
 	# load the tokenizer and the model
 	tokenizer = AutoTokenizer.from_pretrained(config["tokenizer_name"], use_fast=True)
