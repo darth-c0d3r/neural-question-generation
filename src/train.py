@@ -19,7 +19,7 @@ from dataset import get_QuestionGeneration_dataloaders
 from evaluate import evaluate
 from plotting import Plotter
 
-def train(tokenizer, model, dataloaders, optimizer, scheduler, device, config):
+def train(tokenizer, model, dataloaders, optimizer, scheduler, device, device_rank, config):
 	"""
 	the main training routine
 	train the model
@@ -116,10 +116,11 @@ def main(config):
 	# get the device
 
 	if config["gpu_idx"] != -1: # GPU training
-		gpu_rank = setup_multiprocessing(config["gpu_idx"])
+		device_rank = setup_multiprocessing(config["gpu_idx"])
 		device = get_device(config["gpu_idx"])
 		torch.cuda.set_device(device)
 	else:
+		device_rank = 0
 		device = get_device(config["gpu_idx"])
 
 	return
@@ -140,7 +141,7 @@ def main(config):
 	# scheduler = None
 
 	# call the train routine
-	# train(tokenizer, model, dataloaders, optimizer, scheduler, device, config)
+	train(tokenizer, model, dataloaders, optimizer, scheduler, device, device_rank, config)
 
 
 if __name__ == '__main__':
@@ -163,14 +164,6 @@ if __name__ == '__main__':
 	unknown = parse_unknown_args(unknown)
 	config = insert_unknown_args(config, unknown)
 
-	# get unique path for base folder and create it
-	config["logs_folder"] = get_unique_path(config["base_folder"], "train", prefix="run")
-	Path(config["logs_folder"]).mkdir(parents=False, exist_ok=False)
-
-	# set up the checkpoints folder
-	config["ckpts_folder"] = os.path.join(config["logs_folder"], "ckpts")
-	Path(config["ckpts_folder"]).mkdir(parents=False, exist_ok=False)
-
 	# set gpu_idx = local_rank
 
 	# # this is for newer versions of torch
@@ -179,12 +172,23 @@ if __name__ == '__main__':
 
 	config["gpu_idx"] = int(args.local_rank)
 
-	# save the current config file in the logs folder
-	with open(os.path.join(config["logs_folder"], Path(args.config_filename).name), "w+") as f:
-		json5.dump(config, f, indent=4)
+	if config["gpu_idx"] <= 0: # either cpu or first gpu
 
-	# set up parallel logging
-	sys.stdout = Logger(os.path.join(config["logs_folder"], "logfile.log"))
+		# get unique path for base folder and create it
+		config["logs_folder"] = get_unique_path(config["base_folder"], "train", prefix="run")
+		Path(config["logs_folder"]).mkdir(parents=False, exist_ok=False)
+
+		# set up the checkpoints folder
+		config["ckpts_folder"] = os.path.join(config["logs_folder"], "ckpts")
+		Path(config["ckpts_folder"]).mkdir(parents=False, exist_ok=False)
+
+
+		# save the current config file in the logs folder
+		with open(os.path.join(config["logs_folder"], Path(args.config_filename).name), "w+") as f:
+			json5.dump(config, f, indent=4)
+
+		# set up parallel logging
+		sys.stdout = Logger(os.path.join(config["logs_folder"], "logfile.log"))
 
 	# pretty print the config file
 	print(json5.dumps(config, indent=4))

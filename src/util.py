@@ -61,8 +61,8 @@ def setup_multiprocessing(gpu_idx):
 	)
 
 	print(f"World Size: {torch.distributed.get_world_size()} \t \
-			Local Rank: {torch.distributed.get_rank()} \t \
-			GPU Idx {gpu_idx}")
+			GPU Rank: {torch.distributed.get_rank()} \t \
+			GPU Idx: {gpu_idx}")
 
 	return torch.distributed.get_rank()
 
