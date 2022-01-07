@@ -149,7 +149,7 @@ def main(config):
 
 		dataloaders['train'] = DataLoader(
 										dataloaders['train'],
-										batch_size = config['batch_size'],
+										batch_size = config['dataset_batch_size'],
 										shuffle = False,
 										num_workers = 2,
 										pin_memory = True,
