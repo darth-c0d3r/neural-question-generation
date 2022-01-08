@@ -102,6 +102,7 @@ TriviaQA is a realistic text-based question answering dataset which includes 950
 |	|-- train.config
 |	|-- eval.config
 |	|-- pred.config
+|	|-- distill.config
 |-- vis
 |	|-- tsv_viewer.py
 |-- stats
@@ -118,6 +119,8 @@ TriviaQA is a realistic text-based question answering dataset which includes 950
 |	|	|-- run_2 [default decoding params]
 |	|	|-- run_3 [adjusted decoding params]
 |	|	|-- run_4 [dynamic quantized pred]
+|	|-- distill
+|	|	|-- run_xxx
 
 * : file created programmatically
 ```
@@ -148,6 +151,9 @@ python3 create_lmdb.py --input_path ../data/squad/processed/splits/ --output_pat
 # set --gpus 0 for CPU training
 python3 distribute.py --filename train.py --config_filename ../config/train.config --nodes 1 --gpus 4 --rank 0
 python3 train.py --config_filename ../config/train.config
+
+# distillation routine
+python3 distill.py --config_filename ../config/distill.config
 
 # evaluation routine [adjust params in config]
 python3 evaluate.py --config_filename ../config/eval.config
