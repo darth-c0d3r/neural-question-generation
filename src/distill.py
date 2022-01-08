@@ -9,6 +9,7 @@ from tqdm import tqdm
 
 import numpy as np
 import torch
+import torch.nn as nn
 import torch.optim as optim
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, AutoConfig
 
