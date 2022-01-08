@@ -76,7 +76,7 @@ def distill(tokenizer, teacher, student, dataloaders, optimizer, scheduler, dist
 
 			# calculate the masked loss
 			hard_loss = student_out.loss
-			soft_loss = torch.mean(distance_loss(teacher_out.logits, student_out.logits) * (labels != -100))
+			soft_loss = torch.mean(distance_loss(teacher_out.logits, student_out.logits).mean(-1) * (labels != -100))
 
 			loss = soft_loss + config["hard_lambda"] * hard_loss
 
