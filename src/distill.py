@@ -19,7 +19,7 @@ from dataset import get_QuestionGeneration_dataloaders
 from evaluate import evaluate
 from plotting import Plotter
 
-def distill(tokenizer, teacher, student, dataloaders, optimizer, scheduler, device, config):
+def distill(tokenizer, teacher, student, dataloaders, optimizer, scheduler, distance_loss, device, config):
 	"""
 	the main distillation routine
 	train the student model
@@ -152,8 +152,11 @@ def main(config):
 	scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=num_batches, gamma=0.5)
 	# scheduler = None
 
+	# define a distance loss between teacher and student logits
+	distance_loss = nn.MSELoss(reduction='none')
+
 	# call the train routine
-	distill(tokenizer, teacher, student, dataloaders, optimizer, scheduler, device, config)
+	distill(tokenizer, teacher, student, dataloaders, optimizer, scheduler, distance_loss, device, config)
 
 
 if __name__ == '__main__':
