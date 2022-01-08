@@ -18,7 +18,7 @@
 * Distributed Training and Inference
 * ONNX Optimization [not implemented in hgfc]
 * Model Quantization [done]
-* Model Distillation
+* Model Distillation [done]
 * Hosting using Streamlit / Gradio
 * Deploying on HuggingFace Hub [done]
 

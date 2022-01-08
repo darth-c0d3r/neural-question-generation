@@ -92,3 +92,32 @@ All numbers are reported for the average time taken (in seconds) to finish a sin
 * However the eval loss goes from `1.499` to `3.828` and the resulting model outputs are visibly worse.
 * Therefore, without quantization aware training, this is not a viable optimization for text generation.
 * Also, using a GPU is just much faster as compared to CPU (more than 12x speedup).
+
+## 4. Effect of Distillation
+
+Model: `sshleifer/distilbart-cnn-6-6` <br>
+Device: `Tesla K80`
+
+**Effect on Model Size**
+
+| Encoders v / Decoders > |    1   |    3   |    6   |
+| ----------------------- | ------ | ------ | ------ |
+|            1            | 332 MB | 466 MB | 668 MB |
+|            3            | 432 MB | 567 MB | 768 MB |
+|            6            | 584 MB | 718 MB | 920 MB |
+
+**Effect on Model Latency**
+
+| Encoders v / Decoders > |    1   |    3   |    6   |
+| ----------------------- | ------ | ------ | ------ |
+|            1            | 5.9659 | 7.4177 | 5.1534 |
+|            3            | 6.0830 | 4.7039 | 1.5164 |
+|            6            | 6.4152 | 7.8160 | 4.6319 |
+
+
+All numbers are reported for the average time taken (in seconds) to finish a single batch. <br>
+
+**Conclusions** :
+
+* Distilling the model reduces the memory footprint as expected.
+* Some real spooky stuff going on with the latency numbers which are not at all as expected.

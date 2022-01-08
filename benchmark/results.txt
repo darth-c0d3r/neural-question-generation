@@ -110,3 +110,20 @@ Quant Model | BS 32 | SL 512 | Beams 1 | Time 55.2227
 Quant Model | BS 32 | SL 512 | Beams 4 | Time 124.3614
 
 eval	loss:  3.828
+
+# Destillation Experiments
+
+using device cuda:0
+using model sshleifer/distilbart-cnn-6-6
+
+Benchmarking distilled Models.
+
+Distilled Model | Enc 1 | Dec 1 | Time 5.9659 | Size 332.093711 MB
+Distilled Model | Enc 1 | Dec 3 | Time 7.4177 | Size 466.486389 MB
+Distilled Model | Enc 1 | Dec 6 | Time 5.1534 | Size 668.075673 MB
+Distilled Model | Enc 3 | Dec 1 | Time 6.0830 | Size 432.875247 MB
+Distilled Model | Enc 3 | Dec 3 | Time 4.7039 | Size 567.268085 MB
+Distilled Model | Enc 3 | Dec 6 | Time 1.5164 | Size 768.857305 MB
+Distilled Model | Enc 6 | Dec 1 | Time 6.4152 | Size 584.047677 MB
+Distilled Model | Enc 6 | Dec 3 | Time 7.8160 | Size 718.440533 MB
+Distilled Model | Enc 6 | Dec 6 | Time 4.6319 | Size 920.029753 MB

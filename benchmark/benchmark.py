@@ -32,15 +32,17 @@
 RANDOM_SEED = 42
 WORDLIST_FILENAME = "wordlist.txt"
 
+import os
 import argparse
 from time import time
 import itertools
+import shutil
 
 import random
 random.seed(RANDOM_SEED)
 
 import torch
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, AutoConfig
 
 def get_input_text(batch_size, sequence_length):
 	"""
@@ -90,7 +92,7 @@ def benchmark_model(model, batch, decode_params):
 	is already benchmarked in tokenizer
 	"""
 
-	NUM_ITERS = 2
+	NUM_ITERS = 10
 
 	start = time()
 
@@ -108,8 +110,9 @@ def main(args):
 	"""
 
 	do_tokenizer = False
-	do_model = True
-	do_model_quantized = True
+	do_model = False
+	do_model_quantized = False
+	do_model_distilled = True
 
 	model_name = "sshleifer/distilbart-cnn-6-6"
 	device = torch.device(args.gpu_idx if args.gpu_idx >= 0 else 'cpu')
@@ -206,6 +209,45 @@ def main(args):
 				time = benchmark_model(model, batch, decode_params)
 
 				print(f"Quant Model | BS {bs} | SL {sl} | Beams {beam} | Time {time:.4f}")
+
+	# ================================= #
+	# benchmark transformer distilled models here #
+	# ================================= #
+
+	if do_model_distilled is True:
+		print("\nBenchmarking distilled Models.\n")
+
+		encoders = [1,3,6]
+		decoders = [1,3,6]
+		batch_size = 16
+		sequence_length = 256
+		beam_size = 4
+
+		tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
+
+		input_text = get_input_text(batch_size, sequence_length)
+		source = tokenizer(input_text, max_length=sequence_length, padding='longest', truncation=True, return_tensors='pt')
+
+		batch = {'input_ids': source['input_ids'].to(device), 
+					'attention_mask': source['attention_mask'].to(device)}
+
+		decode_params = { # NON DEFAULT PARAMS HERE
+			"min_length": 8, "length_penalty": 1.0, "num_beams": beam_size
+		}
+
+		for e, d in itertools.product(*[encoders, decoders]):
+
+			config = AutoConfig.from_pretrained(model_name)
+			config.encoder_layers = e
+			config.decoder_layers = d
+			model = AutoModelForSeq2SeqLM.from_pretrained(model_name, config=config).to(device)
+
+			time = benchmark_model(model, batch, decode_params)
+			model.save_pretrained("temp")
+			size = os.stat("temp/pytorch_model.bin").st_size
+			shutil.rmtree("temp")
+
+			print(f"Distilled Model | Enc {e} | Dec {d} | Time {time:.4f} | Size {size/1000000} MB")
 
 
 if __name__ == '__main__':
