@@ -202,11 +202,11 @@ def get_mapped_state_dict(teacher, student, student_teacher_mapping):
 	for k in m2_keys:
 		if k.startswith("model.encoder.layers."):
 			k_ = k.split(".")
-			k_[3] = str(student_teacher[int(k_[3])])
+			k_[3] = str(student_teacher_mapping[int(k_[3])])
 			layer_mapping[k] = ".".join(k_)
 		elif k.startswith("model.decoder.layers."):
 			k_ = k.split(".")
-			k_[3] = str(student_teacher[int(k_[3])])
+			k_[3] = str(student_teacher_mapping[int(k_[3])])
 			layer_mapping[k] = ".".join(k_)
 		else:
 			layer_mapping[k] = k
