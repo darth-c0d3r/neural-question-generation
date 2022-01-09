@@ -1,4 +1,4 @@
-# contains the routine to train / fine-tune a hgfc model
+# contains the routine to distill a hgfc model
 
 import argparse
 import json5
@@ -14,7 +14,7 @@ import torch.optim as optim
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, AutoConfig
 
 from util import read_json, parse_unknown_args, insert_unknown_args, get_unique_path
-from util import get_device, pretty_print_results, save_model, Logger
+from util import get_device, pretty_print_results, save_model, Logger, get_mapped_state_dict
 
 from dataset import get_QuestionGeneration_dataloaders
 from evaluate import evaluate
@@ -137,10 +137,16 @@ def main(config):
 	tokenizer = AutoTokenizer.from_pretrained(config["tokenizer_name"])
 	teacher = AutoModelForSeq2SeqLM.from_pretrained(config["teacher_name"]).to(device)
 
+	# tentative loading of student model
 	student_config = AutoConfig.from_pretrained(config["student_init"])
 	student_config.encoder_layers = config["encoder_layers"]
 	student_config.decoder_layers = config["decoder_layers"]
 	student = AutoModelForSeq2SeqLM.from_pretrained(config["student_init"], config=student_config).to(device)
+
+	# correctly mapped loading of student model
+	student_teacher_mapping = {0:0, 1:3, 2:5}
+	student_state_dict = get_mapped_state_dict(teacher, student, student_teacher_mapping)
+	student = AutoModelForSeq2SeqLM.from_pretrained(config["student_init"], state_dict=student_state_dict, config=student_config).to(device)
 
 	# get the dataloaders
 	dataloaders = get_QuestionGeneration_dataloaders(config["dataset_dir"], tokenizer, 
@@ -150,7 +156,7 @@ def main(config):
 	optimizer = optim.Adam(list(student.parameters()), lr=config["learning_rate"], betas=(0.9, 0.999))
 
 	num_batches = int(np.ceil(len(dataloaders["train"].dataset)/config["dataset_batch_size"]))
-	scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=num_batches, gamma=0.5)
+	scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=5*num_batches, gamma=0.4)
 	# scheduler = None
 
 	# define a distance loss between teacher and student logits

@@ -182,3 +182,36 @@ def merge_input_output_files(src_filename_1, src_filename_2, output_filename):
 	src_1.close()
 	src_2.close()
 	tgt.close()
+
+def get_mapped_state_dict(teacher, student, student_teacher_mapping):
+	"""
+	this is a very important function
+	carefully map and load the right set of weights
+	from teacher to student with correct mapping
+	"""
+
+	print(f"Student-Teacher Layer Mapping : {student_teacher_mapping}")
+
+	m1_keys = list(teacher.state_dict().keys())
+	m2_keys = list(student.state_dict().keys())
+
+	m1_sd = teacher.state_dict()
+	m2_sd = student.state_dict()
+
+	layer_mapping = {}
+	for k in m2_keys:
+		if k.startswith("model.encoder.layers."):
+			k_ = k.split(".")
+			k_[3] = str(student_teacher[int(k_[3])])
+			layer_mapping[k] = ".".join(k_)
+		elif k.startswith("model.decoder.layers."):
+			k_ = k.split(".")
+			k_[3] = str(student_teacher[int(k_[3])])
+			layer_mapping[k] = ".".join(k_)
+		else:
+			layer_mapping[k] = k
+
+	for k in m2_keys:
+		m2_sd[k] = torch.clone(m1_sd[layer_mapping[k]])
+
+	return m2_sd
