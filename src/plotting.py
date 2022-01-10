@@ -11,12 +11,14 @@ class Plotter(object):
 	main Plotter class that handles all plotting routines
 	"""
 	
-	def __init__(self, logs_folder, filename, title, lines, samples_per_epoch):
+	def __init__(self, logs_folder, filename, title, lines, samples_per_epoch, opt_fn):
 		"""
 		logs_folder is the base folder for logging
 		filename is the name of the file for curr plot
 		title is the title of the plot
 		lines is a list of strings for names of plot lines
+		opt_fn is the function to track the "best" value
+		eg. for loss it will be min, for accuracy max
 		"""
 
 		# initialize the base class explicitly
@@ -28,6 +30,7 @@ class Plotter(object):
 		self.title = title
 		self.data = {linename: [] for linename in lines}
 		self.samples_per_epoch = samples_per_epoch
+		self.opt_fn = opt_fn
 
 	def extend_plot(self, new_values):
 		"""
@@ -48,8 +51,13 @@ class Plotter(object):
 		# plot all the lines
 		for linename in self.data:
 
-			plt.plot([(i+1)/self.samples_per_epoch for i in range(len(self.data[linename]))], self.data[linename],
-					label=linename)
+			X = [(i+1)/self.samples_per_epoch for i in range(len(self.data[linename]))]
+			Y = self.data[linename]
+
+			y_opt, x_opt = self.opt_fn(zip(Y, X))
+
+			plt.plot(linename, self.data[linename], label=f"{linename} [{y_opt:.3f}]")
+			plt.plot([x_opt], [y_opt], 'k.')
 
 		# plot dotted v-lines
 		num_epochs = max([len(self.data[linename]) for linename in self.data]) // self.samples_per_epoch

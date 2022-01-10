@@ -33,7 +33,7 @@ def distill(tokenizer, teacher, student, dataloaders, optimizer, scheduler, dist
 	print("\n" + "="*10 + "DISTILLATION LOGS" + "="*10 + "\n")
 
 	# initialize the plotters
-	loss_plotter = Plotter(config["logs_folder"], "loss.png", "Loss Values", ["train_hard", "train_soft", "train", "eval"] , config["num_evals_per_epoch"])
+	loss_plotter = Plotter(config["logs_folder"], "loss.png", "Loss Values", ["train_hard", "train_soft", "train", "eval"] , config["num_evals_per_epoch"], min)
 	
 	# get the eval frequency
 	num_batches = int(np.ceil(len(dataloaders["train"].dataset)/config["dataset_batch_size"]))
@@ -156,7 +156,7 @@ def main(config):
 	optimizer = optim.Adam(list(student.parameters()), lr=config["learning_rate"], betas=(0.9, 0.999))
 
 	num_batches = int(np.ceil(len(dataloaders["train"].dataset)/config["dataset_batch_size"]))
-	scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=5*num_batches, gamma=0.4)
+	scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=config["sched_steps"]*num_batches, gamma=config["sched_gamma"])
 	# scheduler = None
 
 	# define a distance loss between teacher and student logits

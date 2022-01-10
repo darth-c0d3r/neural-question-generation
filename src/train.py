@@ -31,7 +31,7 @@ def train(tokenizer, model, dataloaders, optimizer, scheduler, device, config):
 	print("\n" + "="*10 + "TRAINING LOGS" + "="*10 + "\n")
 
 	# initialize the plotters
-	loss_plotter = Plotter(config["logs_folder"], "loss.png", "Loss Values", ["train", "eval"], config["num_evals_per_epoch"])
+	loss_plotter = Plotter(config["logs_folder"], "loss.png", "Loss Values", ["train", "eval"], config["num_evals_per_epoch"], min)
 	
 	# get the eval frequency
 	num_batches = int(np.ceil(len(dataloaders["train"].dataset)/config["dataset_batch_size"]))
@@ -128,7 +128,7 @@ def main(config):
 	optimizer = optim.Adam(list(model.parameters()), lr=config["learning_rate"], betas=(0.9, 0.999))
 
 	num_batches = int(np.ceil(len(dataloaders["train"].dataset)/config["dataset_batch_size"]))
-	scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=num_batches, gamma=0.5)
+	scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=config["sched_steps"]*num_batches, gamma=config["sched_gamma"])
 	# scheduler = None
 
 	# call the train routine
