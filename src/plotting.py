@@ -54,7 +54,8 @@ class Plotter(object):
 			X = [(i+1)/self.samples_per_epoch for i in range(len(self.data[linename]))]
 			Y = self.data[linename]
 
-			y_opt, x_opt = self.opt_fn(zip(Y, X))
+			if len(Y) > 0: y_opt, x_opt = self.opt_fn(zip(Y, X))
+			else: y_opt, x_opt = 0., 0.
 
 			plt.plot(linename, self.data[linename], label=f"{linename} [{y_opt:.3f}]")
 			plt.plot([x_opt], [y_opt], 'k.')
