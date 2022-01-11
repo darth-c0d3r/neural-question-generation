@@ -1,32 +1,18 @@
 # Introduction
 
-[HuggingFace](https://huggingface.co/) is one of the most useful libraries for a NLP researcher / developer as it provides numerous pre-trained models, datasets, and tons of utility functions for NLP. In this repository, I'm trying to setup a complete pipeline for a Machine Learning project and the task I've chosen for the setup is Question Generation for Paragraphs. This is a seq2seq task for which I intend to fine-tune a pre-trained encoder-decoder Transformer model for Extractive Summarization like BART / Pegasus. More specifically, I'm finetuning the `sshleifer/distilbart-cnn-6-6` model on the SQuAD dataset.
+[HuggingFace](https://huggingface.co/) is one of the most useful libraries for a NLP researcher / developer as it provides numerous pre-trained models, datasets, and tons of utility functions for NLP. To setup a generalized NLP pipeline, I have developed a question-generation model for which I first finetuned and later distilled a pretrained summarization model on a question-generation dataset. More specifically, I've chosen the distilbart checkpoint (`sshleifer/distilbart-cnn-6-6`) from HuggingFace and finetuned it on the SQuAD dataset, after which I distilled the resulting model.
 
 # Demo Links
 
 * **[Finetuned 6-6 QGen Model](https://huggingface.co/gpssohi/distilbart-qgen-6-6)**
 * **[Distilled 3-3 QGen Model](https://huggingface.co/gpssohi/distilbart-qgen-3-3)**
 
-# Features / Goals
+# TODO / Pending Tasks
 
-* Environment setup using YAML file [done]
-* Hyper-parameter management with configs [done]
-* Efficient data loading using LMDB [done]
-* Dataset Visualization / Stats [done]
-* Results Visualization / Stats [done]
-* LR Scheduler [done]
-* Multiple Decoding Algorithm Options [done]
-* Intermediate Checkpoints [done]
-* Parallel Logging to file [done]
-* Use Fast Tokenizers [done]
-* Latency + Efficiency Benchmarking [done]
-* Distributed Training and Inference
-* ONNX Optimization [not implemented in hgfc]
-* Model Quantization [done]
-* Model Distillation [done]
+* Distributed Training Setup
+* ONNX Optimization [not available in hgfc]
 * AMP Support
 * Hosting using Streamlit / Gradio
-* Deploying on HuggingFace Hub [done]
 
 # Dataset
 
@@ -77,6 +63,7 @@ TriviaQA is a realistic text-based question answering dataset which includes 950
 
 ```bash
 |-- README.md
+|-- environment.yaml
 |-- data
 |	|-- squad
 |	|	|-- raw
@@ -133,7 +120,7 @@ TriviaQA is a realistic text-based question answering dataset which includes 950
 |	|	|-- run_4 [dynamic quantized pred]
 |	|	|-- run_5 [distilled w/ run_3 params]
 |	|-- distill
-|	|	|-- run_21 [15 epochs and scheduler]
+|	|	|-- run_21 [16 epochs and scheduler]
 
 * : file created programmatically
 ```
@@ -144,42 +131,55 @@ TriviaQA is a realistic text-based question answering dataset which includes 950
 
 # first set up the environment using .yaml file included in the repo
 
+# download the raw dataset from the SQuAD website
+# https://rajpurkar.github.io/SQuAD-explorer/
+
 # preliminary stats on the squad dataset
+# cd data-format
 python3 squad.py --input_dir ../data/squad/raw/ --task raw_stats
 
 # prepare squad question answering data for consumption by converting to tsv
+# cd data-format
 python3 squad.py --input_dir ../data/squad/raw/ --output_dir ../data/squad/processed/ --task json2tsv
 
 # at this point manually split the train set into train and eval in ./splits
+# follow the directory structure shown above
 
 # fetch initial stats on the dataset
+# cd data-utils
 python3 data_stats.py --input_path ../data/squad/processed/splits/ --output_path ../stats/squad/
 
-# take a look at a few samples of the dataset
+# take a look at a few samples of the dataset for sanity
+# cd vis
 streamlit run tsv_viewer.py -- --input_path ../data/squad/processed/splits/eval.tsv
 
 # convert the tsv data into lmdb database for efficient loading
+# cd data-utils
 python3 -m grpc_tools.protoc -I./proto --python_out=./proto ./proto/data_item.proto
 python3 create_lmdb.py --input_path ../data/squad/processed/splits/ --output_path ../data/squad/processed/splits/lmdb/
 
 # training routine [adjust params in config]
-# set --gpus 0 for CPU training
-python3 distribute.py --filename train.py --config_filename ../config/train.config --nodes 1 --gpus 4 --rank 0
+# cd src
 python3 train.py --config_filename ../config/train.config
 
-# distillation routine
+# distillation routine [adjust params in config]
+# cd src
 python3 distill.py --config_filename ../config/distill.config
 
 # evaluation routine [adjust params in config]
+# cd src
 python3 evaluate.py --config_filename ../config/eval.config
 
 # get predictions [adjust params in config]
+# cd src
 python3 predict.py --config_filename ../config/pred.config
 
 # to get interactive predictions [adjust params in config]
+# cd src
 python3 generate.py --config_filename ../config/pred.config
 
 # view the results using streamlit
+# cd vis
 streamlit run tsv_viewer.py -- --input_path ../logs/pred/run_6/eval.tsv
 
 ```
