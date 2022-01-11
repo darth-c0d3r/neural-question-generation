@@ -2,9 +2,14 @@
 
 [HuggingFace](https://huggingface.co/) is one of the most useful libraries for a NLP researcher / developer as it provides numerous pre-trained models, datasets, and tons of utility functions for NLP. In this repository, I'm trying to setup a complete pipeline for a Machine Learning project and the task I've chosen for the setup is Question Generation for Paragraphs. This is a seq2seq task for which I intend to fine-tune a pre-trained encoder-decoder Transformer model for Extractive Summarization like BART / Pegasus. More specifically, I'm finetuning the `sshleifer/distilbart-cnn-6-6` model on the SQuAD dataset.
 
+# Demo Links
+
+* **[Finetuned 6-6 QGen Model](https://huggingface.co/gpssohi/distilbart-qgen-6-6)**
+* **[Distilled 3-3 QGen Model](https://huggingface.co/gpssohi/distilbart-qgen-3-3)**
+
 # Features / Goals
 
-* Environment setup using YAML file
+* Environment setup using YAML file [done]
 * Hyper-parameter management with configs [done]
 * Efficient data loading using LMDB [done]
 * Dataset Visualization / Stats [done]
@@ -64,10 +69,9 @@ TriviaQA is a realistic text-based question answering dataset which includes 950
 
 # Training and Distillation
 
-|        |                  Training               |                   Distillation              |
-| ------ | --------------------------------------- | ------------------------------------------- |
-|  Plot  | ![T Run 6](stats/plots/train_run_6.png) | ![D Run 21](stats/plots/distill_run_21.png) |
-| Folder |             logs/train/run_6            |               logs/distill/run_21           |
+|                  Training               |                   Distillation              |
+| --------------------------------------- | ------------------------------------------- |
+| ![T Run 6](stats/plots/train_run_6.png) | ![D Run 21](stats/plots/distill_run_21.png) |
 
 # Directory Structure
 
@@ -138,6 +142,8 @@ TriviaQA is a realistic text-based question answering dataset which includes 950
 
 ```bash
 
+# first set up the environment using .yaml file included in the repo
+
 # preliminary stats on the squad dataset
 python3 squad.py --input_dir ../data/squad/raw/ --task raw_stats
 
@@ -183,3 +189,4 @@ streamlit run tsv_viewer.py -- --input_path ../logs/pred/run_6/eval.tsv
 1. Instructions on uploading model to hub. [Link](https://huggingface.co/docs/transformers/model_sharing)
 	- Remember to update the default config file with required decoding parameters.
 2. Link to my finetuned 6-6 QGen Model. [Link](https://huggingface.co/gpssohi/distilbart-qgen-6-6)
+3. Link to my distilled 3-3 QGen Model. [Link](https://huggingface.co/gpssohi/distilbart-qgen-3-3)
