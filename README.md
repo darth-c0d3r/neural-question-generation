@@ -62,6 +62,13 @@ The Natural Questions corpus is a question answering dataset by Google. Each exa
 
 TriviaQA is a realistic text-based question answering dataset which includes 950K question-answer pairs from 662K documents collected from Wikipedia and the web. This dataset is more challenging than standard QA benchmark datasets such as Stanford Question Answering Dataset (SQuAD), as the answers for a question may not be directly obtained by span prediction and the context is very long. TriviaQA dataset consists of both human-verified and machine-generated QA subsets.
 
+# Training and Distillation
+
+|        |                  Training               |                   Distillation              |
+| ------ | --------------------------------------- | ------------------------------------------- |
+|  Plot  | ![T Run 6](stats/plots/train_run_6.png) | ![D Run 21](stats/plots/distill_run_21.png) |
+| Folder |             logs/train/run_6            |               logs/distill/run_21           |
+
 # Directory Structure
 
 ```bash
@@ -120,8 +127,9 @@ TriviaQA is a realistic text-based question answering dataset which includes 950
 |	|	|-- run_2 [default decoding params]
 |	|	|-- run_3 [adjusted decoding params]
 |	|	|-- run_4 [dynamic quantized pred]
+|	|	|-- run_5 [distilled w/ run_3 params]
 |	|-- distill
-|	|	|-- run_xxx
+|	|	|-- run_21 [15 epochs and scheduler]
 
 * : file created programmatically
 ```
