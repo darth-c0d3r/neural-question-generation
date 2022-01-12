@@ -1,6 +1,6 @@
 # Introduction
 
-[HuggingFace](https://huggingface.co/) is one of the most useful libraries for a NLP researcher / developer as it provides numerous pre-trained models, datasets, and tons of utility functions for NLP. To setup a generalized NLP pipeline, I have developed a question-generation model for which I first finetuned and later distilled a pretrained summarization model on a question-generation dataset. Specifically, I've chosen the distilbart checkpoint (`sshleifer/distilbart-cnn-6-6`) from HuggingFace and finetuned it on the SQuAD dataset, after which I distilled the resulting model.
+Question Generation is the task of generating a question for a given answer-context pair. This repository contains the code to setup a pipeline to finetune and distill a Transformer model checkpoint for the task using the [HuggingFace](https://huggingface.co/) library along with other required utilities. More specifically, I've fine-tuned and distilled the distilbart checkpoint (`sshleifer/distilbart-cnn-6-6`) on the SQuAD dataset. The codebase is fairly generalized and can be used for other tasks as well with small changes.
 
 # Demo Links
 
