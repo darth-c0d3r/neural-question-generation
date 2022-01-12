@@ -12,7 +12,7 @@ Question Generation is the task of generating a question for a given answer-cont
 # TODO / Pending Tasks
 
 * Distributed Training Setup
-* ONNX Optimization [not available in hgfc]
+* ONNX Optimization [not available in hgfc for generation]
 * AMP Support
 * Hosting using Streamlit / Gradio
 
