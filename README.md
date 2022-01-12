@@ -1,11 +1,13 @@
 # Introduction
 
-[HuggingFace](https://huggingface.co/) is one of the most useful libraries for a NLP researcher / developer as it provides numerous pre-trained models, datasets, and tons of utility functions for NLP. To setup a generalized NLP pipeline, I have developed a question-generation model for which I first finetuned and later distilled a pretrained summarization model on a question-generation dataset. More specifically, I've chosen the distilbart checkpoint (`sshleifer/distilbart-cnn-6-6`) from HuggingFace and finetuned it on the SQuAD dataset, after which I distilled the resulting model.
+[HuggingFace](https://huggingface.co/) is one of the most useful libraries for a NLP researcher / developer as it provides numerous pre-trained models, datasets, and tons of utility functions for NLP. To setup a generalized NLP pipeline, I have developed a question-generation model for which I first finetuned and later distilled a pretrained summarization model on a question-generation dataset. Specifically, I've chosen the distilbart checkpoint (`sshleifer/distilbart-cnn-6-6`) from HuggingFace and finetuned it on the SQuAD dataset, after which I distilled the resulting model.
 
 # Demo Links
 
 * **[Finetuned 6-6 QGen Model](https://huggingface.co/gpssohi/distilbart-qgen-6-6)**
 * **[Distilled 3-3 QGen Model](https://huggingface.co/gpssohi/distilbart-qgen-3-3)**
+
+[Demo SS](stats/plts/summarization-demo.png)
 
 # TODO / Pending Tasks
 
@@ -24,7 +26,7 @@ Stanford Question Answering Dataset (SQuAD) is a reading comprehension dataset, 
 
 ### Preprocessing
 
-The first step is to remove questions which don't have answers. After that, we split the train set into Train and Eval sets and treat the dev set as the test set.
+The first step is to remove questions that don't have answers. After that, we split the train set into Train and Eval sets and treat the dev set as the test set.
 
 ### Stats
 
