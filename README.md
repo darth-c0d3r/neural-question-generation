@@ -7,7 +7,7 @@
 * **[Finetuned 6-6 QGen Model](https://huggingface.co/gpssohi/distilbart-qgen-6-6)**
 * **[Distilled 3-3 QGen Model](https://huggingface.co/gpssohi/distilbart-qgen-3-3)**
 
-[Demo SS](stats/plts/summarization-demo.png)
+![Demo SS](stats/plts/summarization-demo.png)
 
 # TODO / Pending Tasks
 
