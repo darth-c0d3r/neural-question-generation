@@ -1,6 +1,6 @@
 # Introduction
 
-Question Generation is the task of generating a question for a given answer-context pair. This repository contains the code to setup a pipeline to finetune and distill a Transformer model checkpoint for the task using the [HuggingFace](https://huggingface.co/) library along with other required utilities. More specifically, I've fine-tuned and distilled the distilbart checkpoint (`sshleifer/distilbart-cnn-6-6`) on the SQuAD dataset. The codebase is fairly generalized and can be used for other tasks as well with small changes.
+Question Generation is the task of generating a question for a given answer-context pair. This repository contains the code to setup a pipeline to finetune and distill a Transformer model checkpoint for the task using the [HuggingFace](https://huggingface.co/) library along with other required utilities. More specifically, I've fine-tuned and distilled the distilbart summarization model checkpoint (`sshleifer/distilbart-cnn-6-6`) on the SQuAD dataset. The codebase is fairly generalized and can be used for other tasks as well with small changes.
 
 # Demo Links
 
